@@ -1,0 +1,6 @@
+outs:
+- md5: 186740f5cbef806685fcd27585e6f852.dir
+  size: 66212309
+  nfiles: 1
+  hash: md5
+  path: IMDB Dataset
