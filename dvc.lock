@@ -2,21 +2,51 @@ schema: '2.0'
 stages:
   preprocess_data:
     cmd: mkdir -p ./data/preprocessed && uv run python -m 
-      src.preprocessing.script
+      src.preprocessing.scripts.preprocess_data
     deps:
     - path: data/raw/IMDB Dataset/
       hash: md5
       md5: 186740f5cbef806685fcd27585e6f852.dir
       size: 66212309
       nfiles: 1
-    - path: src/preprocessing/
+    - path: src/preprocessing/clean.py
       hash: md5
-      md5: d56d15ab294d29ddb836e81352cdfead.dir
-      size: 7536
-      nfiles: 12
+      md5: f27f7f4a53d4b4b80ff5d12d6533d56e
+      size: 260
+    - path: src/preprocessing/scripts/preprocess_data.py
+      hash: md5
+      md5: 8e9c6568a0276bcead81ea409b844a23
+      size: 735
+    - path: src/preprocessing/tokenize.py
+      hash: md5
+      md5: d9a63239e05b796a44f475b82a5cdcbb
+      size: 194
     outs:
     - path: data/preprocessed/
       hash: md5
-      md5: 71b24a5379253336fe632bf416e48ed8.dir
-      size: 62805218
+      md5: b4844d2fdbed40727287a6ab44b25543.dir
+      size: 62805212
+      nfiles: 1
+  vectorize_data:
+    cmd: mkdir -p ./data/vectorized && uv run python -m 
+      src.preprocessing.scripts.vectorize_data
+    deps:
+    - path: data/preprocessed/
+      hash: md5
+      md5: b4844d2fdbed40727287a6ab44b25543.dir
+      size: 62805212
+      nfiles: 1
+    - path: src/preprocessing/scripts/vectorize_data.py
+      hash: md5
+      md5: 7f03db90936c2d01506e64c7c9b54b0d
+      size: 627
+    - path: src/preprocessing/vectorize.py
+      hash: md5
+      md5: 8a6c055b4e8b916d8a0fdd9e90f20f57
+      size: 874
+    outs:
+    - path: data/vectorized/
+      hash: md5
+      md5: fee292099212ab0568fb9fc58b418f42.dir
+      size: 81766643
       nfiles: 1

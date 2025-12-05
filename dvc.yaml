@@ -1,8 +1,19 @@
 stages:
   preprocess_data:
-    cmd: mkdir -p ./data/preprocessed && uv run python -m src.preprocessing.script
+    cmd: mkdir -p ./data/preprocessed && uv run python -m src.preprocessing.scripts.preprocess_data
     deps:
-      - src/preprocessing/
+      - src/preprocessing/scripts/preprocess_data.py
+      - src/preprocessing/clean.py
+      - src/preprocessing/tokenize.py
       - data/raw/IMDB Dataset/
     outs:
       - data/preprocessed/
+
+  vectorize_data:
+    cmd: mkdir -p ./data/vectorized && uv run python -m src.preprocessing.scripts.vectorize_data
+    deps:
+      - src/preprocessing/scripts/vectorize_data.py
+      - src/preprocessing/vectorize.py
+      - data/preprocessed/
+    outs:
+      - data/vectorized/
