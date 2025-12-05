@@ -44,8 +44,8 @@ stages:
       nfiles: 3
     - path: src/preprocessing/scripts/vectorize_data.py
       hash: md5
-      md5: 710186bf8d1aa1871858b5fe9b72d1f7
-      size: 1249
+      md5: b8cf82527645c94fd6867d03a896fe44
+      size: 1910
     - path: src/preprocessing/vectorize.py
       hash: md5
       md5: 8a6c055b4e8b916d8a0fdd9e90f20f57
@@ -53,6 +53,6 @@ stages:
     outs:
     - path: data/vectorized/
       hash: md5
-      md5: d1a86a0085f8e76a9a7583324ccb3fdf.dir
-      size: 81643345
-      nfiles: 3
+      md5: e967a7db8690298acc7eebc5a69e37d1.dir
+      size: 82043996
+      nfiles: 6

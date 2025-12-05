@@ -15,14 +15,23 @@ if __name__ == "__main__":
     val_corpus = []
     test_corpus = []
     
+    train_scores = []
+    val_scores = []
+    test_scores = []
+    
     for path in preprocessed_data_paths:
-        text = pd.read_csv(path)["text"].to_list()
+        csv = pd.read_csv(path)
+        text = csv["text"].to_list()
+        scores = csv["score"].to_list()
         if path.endswith("train.csv"):
             train_corpus.extend(text)
+            train_scores.extend(scores)
         elif path.endswith("val.csv"):
             val_corpus.extend(text)
+            val_scores.extend(scores)
         elif path.endswith("test.csv"):
             test_corpus.extend(text)
+            test_scores.extend(scores)
     
     train_corpus = np.array(train_corpus)
     val_corpus = np.array(val_corpus)
@@ -34,6 +43,13 @@ if __name__ == "__main__":
     val_vectors = vectorizer.transform(val_corpus)
     test_vectors = vectorizer.transform(test_corpus)
     
-    joblib.dump(train_vectors, "data/vectorized/train_vectors.pkl")
-    joblib.dump(val_vectors, "data/vectorized/val_vectors.pkl")
-    joblib.dump(test_vectors, "data/vectorized/test_vectors.pkl")
+    vectors_path = "data/vectorized/"
+    assert os.path.exists(vectors_path), f"{vectors_path!r} doesn't exist!"
+    
+    joblib.dump(train_vectors, os.path.join(vectors_path, "train_vectors.pkl"))
+    joblib.dump(val_vectors, os.path.join(vectors_path, "val_vectors.pkl"))
+    joblib.dump(test_vectors, os.path.join(vectors_path, "test_vectors.pkl"))
+    
+    joblib.dump(np.array(train_scores), os.path.join(vectors_path, "train_scores.pkl"))
+    joblib.dump(np.array(val_scores), os.path.join(vectors_path, "val_scores.pkl"))
+    joblib.dump(np.array(test_scores), os.path.join(vectors_path, "test_scores.pkl"))
