@@ -56,3 +56,19 @@ stages:
       md5: e967a7db8690298acc7eebc5a69e37d1.dir
       size: 82043996
       nfiles: 6
+  run_baselines:
+    cmd: uv run python -m src.training.baselines
+    deps:
+    - path: .env.dev
+      hash: md5
+      md5: acb4328768af39e57e9b2037bbb1fc68
+      size: 89
+    - path: data/preprocessed/
+      hash: md5
+      md5: 2f70bd6542b6169860cece29b461d911.dir
+      size: 62802407
+      nfiles: 3
+    - path: src/training/baselines.py
+      hash: md5
+      md5: 9e641084039e2bdab2c0672a6017a2e8
+      size: 2115

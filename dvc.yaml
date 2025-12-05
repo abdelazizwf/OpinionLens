@@ -19,3 +19,10 @@ stages:
       - data/preprocessed/
     outs:
       - data/vectorized/
+
+  run_baselines:
+    cmd: uv run python -m src.training.baselines
+    deps:
+      - src/training/baselines.py
+      - data/preprocessed/
+      - .env.dev
