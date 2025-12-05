@@ -1,0 +1,22 @@
+schema: '2.0'
+stages:
+  preprocess_data:
+    cmd: mkdir -p ./data/preprocessed && uv run python -m 
+      src.preprocessing.script
+    deps:
+    - path: data/raw/IMDB Dataset/
+      hash: md5
+      md5: 186740f5cbef806685fcd27585e6f852.dir
+      size: 66212309
+      nfiles: 1
+    - path: src/preprocessing/
+      hash: md5
+      md5: d56d15ab294d29ddb836e81352cdfead.dir
+      size: 7536
+      nfiles: 12
+    outs:
+    - path: data/preprocessed/
+      hash: md5
+      md5: 71b24a5379253336fe632bf416e48ed8.dir
+      size: 62805218
+      nfiles: 1

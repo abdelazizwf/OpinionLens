@@ -1,2 +1,4 @@
+[core]
+    remote = local_remote
 ['remote "local_remote"']
     url = /home/abdelazizwf/.local/dvc/OpinionLens/

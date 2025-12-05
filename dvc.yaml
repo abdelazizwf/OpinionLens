@@ -1,0 +1,8 @@
+stages:
+  preprocess_data:
+    cmd: mkdir -p ./data/preprocessed && uv run python -m src.preprocessing.script
+    deps:
+      - src/preprocessing/
+      - data/raw/IMDB Dataset/
+    outs:
+      - data/preprocessed/
