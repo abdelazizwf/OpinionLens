@@ -17,3 +17,4 @@ wheels/
 /objects
 /mlruns.db
 /mlartifacts
+/optuna.sqlite3

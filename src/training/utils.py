@@ -1,4 +1,14 @@
 import joblib
+import numpy as np
+from sklearn.metrics import (
+    ConfusionMatrixDisplay,
+    RocCurveDisplay,
+    accuracy_score,
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
 
 
 def load_data():
@@ -11,3 +21,16 @@ def load_data():
     y_test = joblib.load("data/vectorized/test_scores.pkl")
     
     return X_train, X_val, X_test, y_train, y_val, y_test
+
+
+def calculate_metrics(y_test, predictions, prefix=""):
+    metrics = {
+        f"{prefix}accuracy": accuracy_score(y_test, predictions),
+        f"{prefix}precision": precision_score(y_test, predictions, zero_division=np.nan),
+        f"{prefix}recall": recall_score(y_test, predictions, zero_division=np.nan),
+        f"{prefix}f1_score": f1_score(y_test, predictions, zero_division=np.nan),
+        f"{prefix}roc_auc": roc_auc_score(y_test, predictions),
+    }
+    con_matrix_fig = ConfusionMatrixDisplay.from_predictions(y_test, predictions).figure_
+    roc_fig = RocCurveDisplay.from_predictions(y_test, predictions).figure_
+    return metrics, con_matrix_fig, roc_fig

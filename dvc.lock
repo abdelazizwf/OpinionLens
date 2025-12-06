@@ -78,5 +78,5 @@ stages:
       nfiles: 6
     - path: src/training/train_sklearn.py
       hash: md5
-      md5: d83241babc9f6b1956bcf52ec303cddb
-      size: 1358
+      md5: 60414776d9ded21cd7b84759a4375aab
+      size: 685

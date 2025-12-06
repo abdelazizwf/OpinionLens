@@ -6,3 +6,6 @@ preprocessing:
     - 0.8
     - 0.1
     - 0.1
+
+training:
+  n_trials: 50
