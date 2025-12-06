@@ -25,4 +25,9 @@ stages:
     deps:
       - src/training/baselines.py
       - data/preprocessed/
-      - .env.dev
+
+  train_sklearn:
+    cmd: uv run python -m src.training.train_sklearn
+    deps:
+      - src/training/train_sklearn.py
+      - data/vectorized/

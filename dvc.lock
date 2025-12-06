@@ -59,16 +59,24 @@ stages:
   run_baselines:
     cmd: uv run python -m src.training.baselines
     deps:
-    - path: .env.dev
-      hash: md5
-      md5: acb4328768af39e57e9b2037bbb1fc68
-      size: 89
     - path: data/preprocessed/
       hash: md5
-      md5: 2f70bd6542b6169860cece29b461d911.dir
-      size: 62802407
+      md5: 7ee0446e9995ee4c142254476d4447e2.dir
+      size: 62802080
       nfiles: 3
     - path: src/training/baselines.py
       hash: md5
       md5: e6d6fa1c28afa4786b0bfe950b3cd945
       size: 2663
+  train_sklearn:
+    cmd: uv run python -m src.training.train_sklearn
+    deps:
+    - path: data/vectorized/
+      hash: md5
+      md5: 3361b68dec216f89abf694e3835374f1.dir
+      size: 82048196
+      nfiles: 6
+    - path: src/training/train_sklearn.py
+      hash: md5
+      md5: d83241babc9f6b1956bcf52ec303cddb
+      size: 1358
