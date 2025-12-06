@@ -1,3 +1,6 @@
+base:
+  random_seed: 0
+
 preprocessing:
   data_splits:
     - 0.8

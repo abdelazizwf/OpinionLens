@@ -15,8 +15,8 @@ stages:
       size: 260
     - path: src/preprocessing/scripts/preprocess_data.py
       hash: md5
-      md5: 011b746b595f70c99ecd1c670795976d
-      size: 1493
+      md5: 606e63a21d9a07ee672d23a1d823466d
+      size: 1607
     - path: src/preprocessing/tokenize.py
       hash: md5
       md5: d9a63239e05b796a44f475b82a5cdcbb
@@ -30,8 +30,8 @@ stages:
     outs:
     - path: data/preprocessed/imdb_dataset/
       hash: md5
-      md5: 5a45e34d28048de8206150aa69dae136.dir
-      size: 62802407
+      md5: 12ed721eab42e5783b722ab5ee851625.dir
+      size: 62802080
       nfiles: 3
   vectorize_data:
     cmd: mkdir -p ./data/vectorized && uv run python -m 
@@ -39,8 +39,8 @@ stages:
     deps:
     - path: data/preprocessed/
       hash: md5
-      md5: 2f70bd6542b6169860cece29b461d911.dir
-      size: 62802407
+      md5: 7ee0446e9995ee4c142254476d4447e2.dir
+      size: 62802080
       nfiles: 3
     - path: src/preprocessing/scripts/vectorize_data.py
       hash: md5
@@ -53,8 +53,8 @@ stages:
     outs:
     - path: data/vectorized/
       hash: md5
-      md5: e967a7db8690298acc7eebc5a69e37d1.dir
-      size: 82043996
+      md5: 3361b68dec216f89abf694e3835374f1.dir
+      size: 82048196
       nfiles: 6
   run_baselines:
     cmd: uv run python -m src.training.baselines

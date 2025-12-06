@@ -23,6 +23,9 @@ def preprocess_imdb_dataset():
     )
     imdb_data["text"] = imdb_data["review"].apply(tokenize_text)
     imdb_data.drop(columns=["review", "sentiment"], inplace=True)
+    imdb_data = imdb_data.sample(
+        frac=1, random_state=conf.base.random_seed
+    ).reset_index(drop=True)
     
     train_frac, val_frac, test_frac = conf.preprocessing.data_splits
     preprocessed_data_path = "data/preprocessed/imdb_dataset/"
