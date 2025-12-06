@@ -26,7 +26,17 @@ def random_baseline(train_data: pd.DataFrame, test_data: pd.DataFrame):
 
 
 def heuristic_baseline(train_data: pd.DataFrame, test_data: pd.DataFrame):
-    pass
+    good_words = "good great best enjoyed loved :) masterpiece".split()
+    bad_words = "bad worst shit crap hated :( repugnant boring shallow".split()
+    
+    predictions = []
+    for _, text in test_data["text"].items():
+        word_counter = Counter(text.lower().split())
+        good_word_count = sum(word_counter.get(word, 0) for word in good_words)
+        bad_word_count = sum(word_counter.get(word, 0) for word in bad_words)
+        predictions.append(1 if good_word_count >= bad_word_count else 0)
+    
+    return predictions
 
 
 if __name__ == "__main__":
@@ -34,7 +44,7 @@ if __name__ == "__main__":
     test_data = pd.read_csv("./data/preprocessed/imdb_dataset/test.csv")
     
     for func in [
-        zero_rule_baseline, random_baseline,
+        zero_rule_baseline, random_baseline, heuristic_baseline,
     ]:
         with mlflow.start_run(run_name=func.__name__) as run:
             predictions = func(train_data, test_data)
