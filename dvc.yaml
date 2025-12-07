@@ -23,20 +23,17 @@ stages:
   run_baselines:
     cmd: uv run python -m src.training.baselines
     deps:
-      - src/training/baselines.py
       - data/preprocessed/
+    always_changed: true
 
   train_sklearn:
     cmd: uv run python -m src.training.train_sklearn
     deps:
-      - src/training/train_sklearn.py
       - data/vectorized/
+    always_changed: true
 
   tune_sklearn:
     cmd: uv run python -m src.training.tune_sklearn
     deps:
-      - src/training/tune_sklearn.py
-      - src/training/sklearn_models.py
       - data/vectorized/
-    params:
-      - training.n_trials
+    always_changed: true
