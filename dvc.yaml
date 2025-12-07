@@ -31,3 +31,12 @@ stages:
     deps:
       - src/training/train_sklearn.py
       - data/vectorized/
+
+  tune_sklearn:
+    cmd: uv run python -m src.training.tune_sklearn
+    deps:
+      - src/training/tune_sklearn.py
+      - src/training/sklearn_models.py
+      - data/vectorized/
+    params:
+      - training.n_trials

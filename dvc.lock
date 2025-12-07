@@ -78,5 +78,24 @@ stages:
       nfiles: 6
     - path: src/training/train_sklearn.py
       hash: md5
-      md5: 60414776d9ded21cd7b84759a4375aab
-      size: 685
+      md5: bc8401782a2baaec835fa2cb0e8f8ba2
+      size: 854
+  tune_sklearn:
+    cmd: uv run python -m src.training.tune_sklearn
+    deps:
+    - path: data/vectorized/
+      hash: md5
+      md5: 3361b68dec216f89abf694e3835374f1.dir
+      size: 82048196
+      nfiles: 6
+    - path: src/training/sklearn_models.py
+      hash: md5
+      md5: ec14ff14dc8990b6843bab6d6a2aaef8
+      size: 1142
+    - path: src/training/tune_sklearn.py
+      hash: md5
+      md5: 038820b0c69000cb096b27d12c6e9f7d
+      size: 2150
+    params:
+      params.yaml:
+        training.n_trials: 50
