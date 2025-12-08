@@ -55,3 +55,9 @@ if __name__ == "__main__":
         mlflow.log_metrics(metrics)
         mlflow.log_figure(con_matrix_fig, "figures/confusion_matrix.png")
         mlflow.log_figure(roc_fig, "figures/roc.png")
+        
+        exp_name = mlflow.get_experiment(run.info.experiment_id).name
+        model_name = exp_name + "-" + "-".join(run_name.split("-")[:2])
+        mlflow.sklearn.log_model(
+            model, name=model_name, input_example=X_test[0],
+        )

@@ -88,14 +88,3 @@ stages:
       md5: 3361b68dec216f89abf694e3835374f1.dir
       size: 82048196
       nfiles: 6
-    - path: src/training/sklearn_models.py
-      hash: md5
-      md5: cc8208e92b262a76aaa4666e48802471
-      size: 2927
-    - path: src/training/tune_sklearn.py
-      hash: md5
-      md5: fedfa9c5454d2fded8b6a589b94de93c
-      size: 2164
-    params:
-      params.yaml:
-        training.n_trials: 50
