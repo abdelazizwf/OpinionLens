@@ -8,7 +8,7 @@ from .. import clean_text, tokenizer
 conf = OmegaConf.load("./params.yaml")
 
 
-def tokenize_text(text):
+def tokenize_text(text: str) -> str:
     return " ".join(tokenizer(clean_text(text)))
 
 

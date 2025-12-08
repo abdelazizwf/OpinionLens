@@ -1,8 +1,10 @@
 from datetime import datetime
+from typing import Collection
 
 import joblib
 import numpy as np
-from scipy.sparse import vstack
+from matplotlib.figure import Figure
+from scipy.sparse import csr_matrix, vstack
 from sklearn.metrics import (
     ConfusionMatrixDisplay,
     RocCurveDisplay,
@@ -14,7 +16,7 @@ from sklearn.metrics import (
 )
 
 
-def load_vectorized_data():
+def load_vectorized_data() -> tuple[Collection]:
     X_train = joblib.load("data/vectorized/train_vectors.pkl")
     X_val = joblib.load("data/vectorized/val_vectors.pkl")
     X_test = joblib.load("data/vectorized/test_vectors.pkl")
@@ -26,7 +28,12 @@ def load_vectorized_data():
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
-def calculate_metrics(y_test, predictions, prefix="", figures=False):
+def calculate_metrics(
+    y_test: Collection,
+    predictions: Collection,
+    prefix: str = "",
+    figures: bool = False
+) -> dict[str, float] | tuple[dict[str, float], Figure, Figure]:
     assert len(y_test) == len(predictions)
     metrics = {
         f"{prefix}accuracy": accuracy_score(y_test, predictions),
@@ -44,14 +51,17 @@ def calculate_metrics(y_test, predictions, prefix="", figures=False):
         return metrics
 
 
-def concat_data(vectors_list, scores_list):
+def concat_data(
+    vectors_list: list[csr_matrix],
+    scores_list: list[np.typing.NDArray]
+) -> tuple[csr_matrix, np.typing.NDArray]:
     assert type(vectors_list) is list and type(scores_list) is list
     vectors = vstack(vectors_list, format="csr")
     scores = np.concat(scores_list)
     return vectors, scores
 
 
-def get_timestamp():
+def get_timestamp() -> str:
     time = datetime.now().replace(microsecond=0).isoformat()
     replacements = str.maketrans("", "", "T:-")
     time = time.translate(replacements)

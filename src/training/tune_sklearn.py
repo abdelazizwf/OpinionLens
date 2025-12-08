@@ -2,7 +2,7 @@ import mlflow
 import optuna
 from omegaconf import OmegaConf
 
-from .sklearn_models import BaggingLinearSVCSubject
+from .sklearn_subjects import BaggingLinearSVCSubject
 from .utils import calculate_metrics, concat_data, get_timestamp, load_vectorized_data
 
 conf = OmegaConf.load("params.yaml")
