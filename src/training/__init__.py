@@ -11,5 +11,3 @@ mlflow.set_tracking_uri(
 mlflow.set_experiment(
     os.environ.get("MLFLOW_EXPERIMENT_NAME")
 )
-# Check this when deploying
-# mlflow.set_registry_uri()

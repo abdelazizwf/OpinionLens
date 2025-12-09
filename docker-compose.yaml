@@ -1,0 +1,33 @@
+services:
+  my-postgres:
+    image: postgres:latest
+    pull_policy: never
+    container_name: my-postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - /var/lib/postgresql
+      - ./configs/postgres:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: root
+    networks:
+      - docker-net
+
+  my-mlflow:
+    image: custom-mlflow
+    pull_policy: never
+    container_name: my-mlflow
+    build:
+      context: ./infra/mlflow
+      dockerfile: Dockerfile
+    ports:
+      - 5000:5000
+    volumes:
+      - /mlflow
+    networks:
+      - docker-net
+
+networks:
+  docker-net:
+    external: true
