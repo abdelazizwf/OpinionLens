@@ -2,14 +2,20 @@ import mlflow
 import optuna
 from omegaconf import OmegaConf
 
-from .sklearn_subjects import BaggingLinearSVCSubject
-from .utils import calculate_metrics, concat_data, get_timestamp, load_vectorized_data
+from opinionlens.common.utils import get_timestamp
+from opinionlens.training.sklearn_subjects import BaggingLinearSVCSubject
+from opinionlens.training.utils import (
+    calculate_metrics,
+    concat_data,
+    load_vectorized_data,
+)
 
-conf = OmegaConf.load("params.yaml")
 
-X_train, X_val, X_test, y_train, y_val, y_test = load_vectorized_data()
+def main():
+    conf = OmegaConf.load("params.yaml")
 
-if __name__ == "__main__":
+    X_train, X_val, X_test, y_train, y_val, y_test = load_vectorized_data()
+
     subject = BaggingLinearSVCSubject
     run_name = subject.mlflow_run_name
     with mlflow.start_run(run_name=run_name) as run:
@@ -61,3 +67,7 @@ if __name__ == "__main__":
         mlflow.sklearn.log_model(
             model, name=model_name, input_example=X_test[0],
         )
+
+
+if __name__ == "__main__":
+    main()

@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Collection
 
 import joblib
@@ -59,10 +58,3 @@ def concat_data(
     vectors = vstack(vectors_list, format="csr")
     scores = np.concat(scores_list)
     return vectors, scores
-
-
-def get_timestamp() -> str:
-    time = datetime.now().replace(microsecond=0).isoformat()
-    replacements = str.maketrans("", "", "T:-")
-    time = time.translate(replacements)
-    return time

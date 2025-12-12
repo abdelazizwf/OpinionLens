@@ -1,9 +1,14 @@
 import mlflow
 from sklearn.linear_model import LogisticRegression
 
-from .utils import calculate_metrics, concat_data, load_vectorized_data
+from opinionlens.training.utils import (
+    calculate_metrics,
+    concat_data,
+    load_vectorized_data,
+)
 
-if __name__ == "__main__":
+
+def main():
     X_train, X_val, X_test, y_train, y_val, y_test = load_vectorized_data()
     
     with mlflow.start_run(run_name="sklearn-log_reg-basic"):
@@ -20,3 +25,6 @@ if __name__ == "__main__":
         
         mlflow.log_figure(con_matrix_fig, "figures/confusion_matrix.png")
         mlflow.log_figure(roc_fig, "figures/roc_curve.png")
+
+if __name__ == "__main__":
+    main()

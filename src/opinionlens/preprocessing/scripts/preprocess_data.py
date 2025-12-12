@@ -3,7 +3,7 @@ import os
 import pandas as pd
 from omegaconf import OmegaConf
 
-from .. import clean_text, tokenizer
+from opinionlens.preprocessing import clean_text, tokenizer
 
 conf = OmegaConf.load("./params.yaml")
 
@@ -39,7 +39,11 @@ def preprocess_imdb_dataset():
     imdb_data.iloc[:train_index - 1].to_csv(os.path.join(preprocessed_data_path, "train.csv"), index=False)
     imdb_data.iloc[train_index:val_index - 1].to_csv(os.path.join(preprocessed_data_path, "val.csv"), index=False)
     imdb_data.iloc[val_index:test_index - 1].to_csv(os.path.join(preprocessed_data_path, "test.csv"), index=False)
-    
+
+
+def main():
+    preprocess_imdb_dataset()
+
 
 if __name__ == "__main__":
-    preprocess_imdb_dataset()
+    main()

@@ -1,11 +1,12 @@
 [project]
-name = "OpinionList"
-version = "0.0.1"
+name = "OpinionLens"
+version = "0.0.2"
 description = "AI-powered sentiment analysis with reproducible models and scalable deployment."
 readme = "README.md"
 requires-python = ">=3.13.3"
+authors = [{ name = "Abdelaziz W. Farahat" }]
 dependencies = [
-    "fastapi>=0.123.5",
+    "fastapi[standard]>=0.123.5",
     "ipykernel>=7.1.0",
     "ipywidgets>=8.1.8",
     "mlflow>=3.6.0",
@@ -18,3 +19,15 @@ dependencies = [
     "uvicorn>=0.38.0",
     "wordcloud>=1.9.4",
 ]
+
+[project.scripts]
+preprocess_data = "opinionlens.preprocessing.scripts.preprocess_data:main"
+vectorize_data = "opinionlens.preprocessing.scripts.vectorize_data:main"
+baselines = "opinionlens.training.baselines:main"
+train_sklearn = "opinionlens.training.train_sklearn:main"
+tune_sklearn = "opinionlens.training.tune_sklearn:main"
+register_model = "opinionlens.training.register_model:main"
+
+[build-system]
+requires = ["uv_build>=0.9.17,<0.10.0"]
+build-backend = "uv_build"

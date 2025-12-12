@@ -1,10 +1,10 @@
 stages:
   preprocess_data:
-    cmd: mkdir -p ./data/preprocessed && uv run python -m src.preprocessing.scripts.preprocess_data
+    cmd: mkdir -p ./data/preprocessed && uv run preprocess_data
     deps:
-      - src/preprocessing/scripts/preprocess_data.py
-      - src/preprocessing/clean.py
-      - src/preprocessing/tokenize.py
+      - src/opinionlens/preprocessing/scripts/preprocess_data.py
+      - src/opinionlens/preprocessing/clean.py
+      - src/opinionlens/preprocessing/tokenize.py
       - data/raw/IMDB Dataset/
     params:
       - preprocessing.data_splits
@@ -12,28 +12,28 @@ stages:
       - data/preprocessed/imdb_dataset/
 
   vectorize_data:
-    cmd: mkdir -p ./data/vectorized && uv run python -m src.preprocessing.scripts.vectorize_data
+    cmd: mkdir -p ./data/vectorized && uv run vectorize_data
     deps:
-      - src/preprocessing/scripts/vectorize_data.py
-      - src/preprocessing/vectorize.py
+      - src/opinionlens/preprocessing/scripts/vectorize_data.py
+      - src/opinionlens/preprocessing/vectorize.py
       - data/preprocessed/
     outs:
       - data/vectorized/
 
   run_baselines:
-    cmd: uv run python -m src.training.baselines
+    cmd: uv run baselines
     deps:
       - data/preprocessed/
     always_changed: true
 
   train_sklearn:
-    cmd: uv run python -m src.training.train_sklearn
+    cmd: uv run train_sklearn
     deps:
       - data/vectorized/
     always_changed: true
 
   tune_sklearn:
-    cmd: uv run python -m src.training.tune_sklearn
+    cmd: uv run tune_sklearn
     deps:
       - data/vectorized/
     always_changed: true

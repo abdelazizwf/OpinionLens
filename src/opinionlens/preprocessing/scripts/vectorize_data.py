@@ -4,10 +4,11 @@ import joblib
 import numpy as np
 import pandas as pd
 
-from .. import get_tfidf_vectorizer
-from ..utils import get_csv_files
+from opinionlens.preprocessing import get_tfidf_vectorizer
+from opinionlens.preprocessing.utils import get_csv_files
 
-if __name__ == "__main__":
+
+def main():
     preprocessed_data_paths = get_csv_files("data/preprocessed/")
     assert preprocessed_data_paths, "No preprocessed data found!"
     
@@ -53,3 +54,7 @@ if __name__ == "__main__":
     joblib.dump(np.array(train_scores), os.path.join(vectors_path, "train_scores.pkl"))
     joblib.dump(np.array(val_scores), os.path.join(vectors_path, "val_scores.pkl"))
     joblib.dump(np.array(test_scores), os.path.join(vectors_path, "test_scores.pkl"))
+
+
+if __name__ == "__main__":
+    main()

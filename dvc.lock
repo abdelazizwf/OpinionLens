@@ -1,26 +1,25 @@
 schema: '2.0'
 stages:
   preprocess_data:
-    cmd: mkdir -p ./data/preprocessed && uv run python -m 
-      src.preprocessing.scripts.preprocess_data
+    cmd: mkdir -p ./data/preprocessed && uv run preprocess_data
     deps:
     - path: data/raw/IMDB Dataset/
       hash: md5
       md5: 186740f5cbef806685fcd27585e6f852.dir
       size: 66212309
       nfiles: 1
-    - path: src/preprocessing/clean.py
+    - path: src/opinionlens/preprocessing/clean.py
       hash: md5
-      md5: f27f7f4a53d4b4b80ff5d12d6533d56e
-      size: 260
-    - path: src/preprocessing/scripts/preprocess_data.py
+      md5: 6c3c121a895a63672af8e0f685d9fc19
+      size: 272
+    - path: src/opinionlens/preprocessing/scripts/preprocess_data.py
       hash: md5
-      md5: 606e63a21d9a07ee672d23a1d823466d
-      size: 1607
-    - path: src/preprocessing/tokenize.py
+      md5: ada83a371aa22994589a39ffc8e251bc
+      size: 1663
+    - path: src/opinionlens/preprocessing/tokenize.py
       hash: md5
-      md5: d9a63239e05b796a44f475b82a5cdcbb
-      size: 194
+      md5: fce993fc09013a0e45c08fa7bcc710ec
+      size: 245
     params:
       params.yaml:
         preprocessing.data_splits:
@@ -34,22 +33,21 @@ stages:
       size: 62802080
       nfiles: 3
   vectorize_data:
-    cmd: mkdir -p ./data/vectorized && uv run python -m 
-      src.preprocessing.scripts.vectorize_data
+    cmd: mkdir -p ./data/vectorized && uv run vectorize_data
     deps:
     - path: data/preprocessed/
       hash: md5
       md5: 7ee0446e9995ee4c142254476d4447e2.dir
       size: 62802080
       nfiles: 3
-    - path: src/preprocessing/scripts/vectorize_data.py
+    - path: src/opinionlens/preprocessing/scripts/vectorize_data.py
       hash: md5
-      md5: b8cf82527645c94fd6867d03a896fe44
-      size: 1910
-    - path: src/preprocessing/vectorize.py
+      md5: bb58e790b50bc0936eda671bd866505d
+      size: 1983
+    - path: src/opinionlens/preprocessing/vectorize.py
       hash: md5
-      md5: 8a6c055b4e8b916d8a0fdd9e90f20f57
-      size: 874
+      md5: dc0a7d263b890767ac59afa239e7f99f
+      size: 954
     outs:
     - path: data/vectorized/
       hash: md5
@@ -81,7 +79,7 @@ stages:
       md5: bc8401782a2baaec835fa2cb0e8f8ba2
       size: 854
   tune_sklearn:
-    cmd: uv run python -m src.training.tune_sklearn
+    cmd: uv run tune_sklearn
     deps:
     - path: data/vectorized/
       hash: md5
