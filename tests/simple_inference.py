@@ -1,9 +1,9 @@
 import mlflow
 import numpy as np
 
-from src.preprocessing.clean import clean_text
-from src.preprocessing.tokenize import tokenizer
-from src.preprocessing.vectorize import get_saved_tfidf_vectorizer
+from opinionlens.preprocessing.clean import clean_text
+from opinionlens.preprocessing.tokenize import tokenizer
+from opinionlens.preprocessing.vectorize import get_saved_tfidf_vectorizer
 
 if __name__ == "__main__":
     model = mlflow.sklearn.load_model(
