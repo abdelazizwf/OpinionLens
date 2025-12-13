@@ -1,22 +1,14 @@
-import mlflow
-import numpy as np
 from fastapi import FastAPI
+from pydantic import BaseModel
 
-from opinionlens.preprocessing import clean_text, get_saved_tfidf_vectorizer, tokenizer
-
-model = mlflow.sklearn.load_model(
-    "models:/sklearn-lin_svc/1"
-)
+from opinionlens.api.models import fetch_model_from_registery, make_prediction
 
 
-def make_prediction(text: str):
-    tokenized_text = " ".join(tokenizer(clean_text(text)))
-
-    vectorizer = get_saved_tfidf_vectorizer()
-    vectors = vectorizer.transform(np.array([tokenized_text]))
-
-    prediction = int(model.predict(vectors)[0])
-    return prediction
+class ModelFetchRequest(BaseModel):
+    model_id: str
+    model_name: str | None = None
+    model_version: int | None = None
+    set_current_model: bool = False
 
 
 app = FastAPI()
@@ -37,7 +29,17 @@ async def about():
     }
 
 
-@app.get("/api/v1/predict")
+@app.get("/v1/predict")
 async def predict(text: str):
     prediction = "POSITIVE" if make_prediction(text) == 1 else "NEGATIVE"
     return {"prediction": prediction}
+
+
+@app.post("/v1/_/fetch_model")
+async def fetch_model(request: ModelFetchRequest):
+    model_path = fetch_model_from_registery(
+        request.model_id, request.set_current_model
+    )
+    return {
+        "message": f"Model saved at {model_path!r}",
+    }
