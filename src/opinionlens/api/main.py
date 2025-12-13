@@ -1,15 +1,8 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+from typing import Annotated
 
-from opinionlens.api.models import fetch_model_from_registery, make_prediction
+from fastapi import Body, FastAPI
 
-
-class ModelFetchRequest(BaseModel):
-    model_id: str
-    model_name: str | None = None
-    model_version: int | None = None
-    set_current_model: bool = False
-
+from opinionlens.api.inference import fetch_model_from_registery, make_prediction
 
 app = FastAPI()
 
@@ -35,10 +28,24 @@ async def predict(text: str):
     return {"prediction": prediction}
 
 
+@app.post("/v1/batch_predict")
+async def batch_predict(
+    text_batch: Annotated[list[str], Body()],
+) -> list[str]:
+    response = []
+    for text in text_batch:
+        prediction = "POSITIVE" if make_prediction(text) == 1 else "NEGATIVE"
+        response.append(prediction)
+    return response
+
+
 @app.post("/v1/_/fetch_model")
-async def fetch_model(request: ModelFetchRequest):
+async def fetch_model(
+    model_id: Annotated[str, Body()],
+    set_current_model: Annotated[bool, Body()] = False,
+):
     model_path = fetch_model_from_registery(
-        request.model_id, request.set_current_model
+        model_id, set_current_model
     )
     return {
         "message": f"Model saved at {model_path!r}",

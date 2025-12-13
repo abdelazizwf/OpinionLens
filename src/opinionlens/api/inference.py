@@ -20,7 +20,7 @@ def fetch_model_from_registery(model_id: str, set_current_model=False):
         )
     
     if set_current_model:
-        CURRENT_MODEL_ID = model_id
+        CURRENT_MODEL_ID = model_id  # noqa: F841
     
     return dst_path
 
