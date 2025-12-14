@@ -1,8 +1,13 @@
 from typing import Annotated
 
-from fastapi import Body, FastAPI
+from fastapi import Body, FastAPI, HTTPException
 
-from opinionlens.api.inference import fetch_model_from_registery, make_prediction
+from opinionlens.api.exceptions import ModelNotAvailableError
+from opinionlens.api.inference import (
+    fetch_model_from_registery,
+    list_local_models,
+    make_prediction,
+)
 
 app = FastAPI()
 
@@ -24,7 +29,12 @@ async def about():
 
 @app.get("/v1/predict")
 async def predict(text: str):
-    prediction = "POSITIVE" if make_prediction(text) == 1 else "NEGATIVE"
+    try:
+        prediction = make_prediction(text)
+    except ModelNotAvailableError:
+        return HTTPException(status_code=503)
+    
+    prediction = "POSITIVE" if prediction == 1 else "NEGATIVE"
     return {"prediction": prediction}
 
 
@@ -34,8 +44,13 @@ async def batch_predict(
 ) -> list[str]:
     response = []
     for text in text_batch:
-        prediction = "POSITIVE" if make_prediction(text) == 1 else "NEGATIVE"
-        response.append(prediction)
+        try:
+            prediction = make_prediction(text)
+        except ModelNotAvailableError:
+            return HTTPException(status_code=503)
+        
+        response.append("POSITIVE" if prediction == 1 else "NEGATIVE")
+    
     return response
 
 
@@ -50,3 +65,13 @@ async def fetch_model(
     return {
         "message": f"Model saved at {model_path!r}",
     }
+
+
+@app.get("/v1/_/list_models")
+async def list_models():
+    try:
+        models = list_local_models()
+    except ModelNotAvailableError:
+        return HTTPException(status_code=503)
+    
+    return {"models": models}
