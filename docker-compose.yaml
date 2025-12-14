@@ -27,6 +27,18 @@ services:
       - /mlflow
     networks:
       - docker-net
+  
+  my-api:
+    image: api
+    pull_policy: never
+    container_name: my-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:80
+    networks:
+      - docker-net
 
 networks:
   docker-net:

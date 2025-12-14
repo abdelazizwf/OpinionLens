@@ -67,17 +67,13 @@ stages:
       md5: e6d6fa1c28afa4786b0bfe950b3cd945
       size: 2663
   train_sklearn:
-    cmd: uv run python -m src.training.train_sklearn
+    cmd: uv run train_sklearn
     deps:
     - path: data/vectorized/
       hash: md5
       md5: 3361b68dec216f89abf694e3835374f1.dir
       size: 82048196
       nfiles: 6
-    - path: src/training/train_sklearn.py
-      hash: md5
-      md5: bc8401782a2baaec835fa2cb0e8f8ba2
-      size: 854
   tune_sklearn:
     cmd: uv run tune_sklearn
     deps:

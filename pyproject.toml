@@ -7,16 +7,19 @@ requires-python = ">=3.13.3"
 authors = [{ name = "Abdelaziz W. Farahat" }]
 dependencies = [
     "fastapi[standard]>=0.123.5",
-    "ipykernel>=7.1.0",
-    "ipywidgets>=8.1.8",
     "mlflow>=3.6.0",
     "nltk>=3.9.2",
     "omegaconf>=2.3.0",
-    "optuna>=4.6.0",
     "pandas>=2.3.3",
     "scikit-learn>=1.7.2",
-    "torch>=2.9.1",
     "uvicorn>=0.38.0",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.1.0",
+    "ipywidgets>=8.1.8",
+    "optuna>=4.6.0",
     "wordcloud>=1.9.4",
 ]
 

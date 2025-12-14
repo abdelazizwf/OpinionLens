@@ -6,10 +6,12 @@ import numpy as np
 from opinionlens.preprocessing import clean_text, get_saved_tfidf_vectorizer, tokenizer
 
 SAVED_MODEL_PATH = os.environ["API_SAVED_MODEL_PATH"]
-CURRENT_MODEL_ID = os.environ["API_FALLBACK_MODEL_ID"]
+CURRENT_MODEL_ID = None
 
 
 def fetch_model_from_registery(model_id: str, set_current_model=False):
+    global CURRENT_MODEL_ID
+    
     model_uri = f"models:/{model_id}"
     dst_path = os.path.join(SAVED_MODEL_PATH, model_id)
     
@@ -19,13 +21,15 @@ def fetch_model_from_registery(model_id: str, set_current_model=False):
             dst_path=dst_path,
         )
     
-    if set_current_model:
-        CURRENT_MODEL_ID = model_id  # noqa: F841
+    if set_current_model or not CURRENT_MODEL_ID:
+        CURRENT_MODEL_ID = model_id
     
     return dst_path
 
 
 def get_model():
+    global CURRENT_MODEL_ID
+    
     dst_path = os.path.join(SAVED_MODEL_PATH, CURRENT_MODEL_ID)
     
     if not os.path.exists(dst_path):

@@ -3,7 +3,7 @@ import os
 import dotenv
 import mlflow
 
-dotenv.load_dotenv(".env.dev", override=True)
+dotenv.load_dotenv(".env", override=True)
 
 mlflow.set_tracking_uri(
     os.environ.get("MLFLOW_TRACKING_URI")

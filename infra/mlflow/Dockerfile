@@ -17,5 +17,7 @@ CMD ["mlflow", "server", \
     "--host", "0.0.0.0", \
     "--backend-store-uri", \
     "postgresql://root:postgres@my-postgres.docker-net:5432/database", \
-    "--serve-artifacts" \
+    "--serve-artifacts", \
+    "--allowed-hosts", "*.docker-net:*,localhost:*", \
+    "--cors-allowed-origins", "http://*.docker-net" \
     ]

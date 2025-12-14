@@ -1,0 +1,18 @@
+FROM python:3.13.3-slim
+
+RUN pip install uv
+
+RUN mkdir /app && mkdir /app/models
+WORKDIR /app
+
+COPY .python-version params.yaml pyproject.toml README.md ./
+COPY .env.prod ./.env
+COPY src ./src
+COPY tests ./tests
+COPY objects ./objects
+
+RUN uv sync --no-dev
+
+EXPOSE 80
+
+CMD ["uv", "run", "uvicorn", "src.opinionlens.api.main:app", "--host", "0.0.0.0", "--port", "80"]
