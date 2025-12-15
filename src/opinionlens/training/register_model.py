@@ -18,7 +18,7 @@ def main():
     mlflow.set_experiment("Default")
 
     with mlflow.start_run():
-        mlflow.sklearn.log_model(
+        remote_model_info = mlflow.sklearn.log_model(
             model,
             registered_model_name=model_name,
             signature=model_info.signature,
@@ -27,6 +27,10 @@ def main():
             name=model_info.name,
             tags=model_info.tags,
         )
+    
+    print(f"Remote model id: {remote_model_info.model_id}")
+    print(f"Remote model name: {remote_model_info.name}")
+    print(f"Remote model version: {remote_model_info.registered_model_version}")
 
 
 if __name__ == "__main__":

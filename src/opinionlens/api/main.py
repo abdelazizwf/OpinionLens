@@ -4,7 +4,8 @@ from fastapi import Body, FastAPI, HTTPException
 
 from opinionlens.api.exceptions import ModelNotAvailableError
 from opinionlens.api.inference import (
-    fetch_model_from_registery,
+    fetch_model_by_id,
+    fetch_model_by_name,
     list_local_models,
     make_prediction,
 )
@@ -54,13 +55,33 @@ async def batch_predict(
     return response
 
 
-@app.post("/v1/_/fetch_model")
-async def fetch_model(
+@app.post("/v1/_/fetch_model/id")
+async def fetch_model_id(
     model_id: Annotated[str, Body()],
     set_current_model: Annotated[bool, Body()] = False,
 ):
-    model_path = fetch_model_from_registery(
+    model_path = fetch_model_by_id(
         model_id, set_current_model
+    )
+    return {
+        "message": f"Model saved at {model_path!r}",
+    }
+
+
+@app.post("/v1/_/fetch_model/name")
+async def fetch_model_name(
+    model_name: Annotated[str, Body()],
+    model_alias: Annotated[str | None, Body()] = None,
+    model_version: Annotated[int | None, Body()] = None,
+    set_current_model: Annotated[bool, Body()] = False,
+):
+    if model_alias is None and model_version is None:
+        return HTTPException(
+            status_code=400, detail="Either model_alias or model_version has to be provided."
+        )
+    
+    model_path = fetch_model_by_name(
+        model_name, model_alias, model_version, set_current_model
     )
     return {
         "message": f"Model saved at {model_path!r}",
