@@ -33,7 +33,7 @@ async def predict(text: str):
     try:
         prediction = make_prediction(text)
     except ModelNotAvailableError:
-        return HTTPException(status_code=503)
+        raise HTTPException(status_code=503)
     
     prediction = "POSITIVE" if prediction == 1 else "NEGATIVE"
     return {"prediction": prediction}
@@ -48,7 +48,7 @@ async def batch_predict(
         try:
             prediction = make_prediction(text)
         except ModelNotAvailableError:
-            return HTTPException(status_code=503)
+            raise HTTPException(status_code=503)
         
         response.append("POSITIVE" if prediction == 1 else "NEGATIVE")
     
@@ -76,7 +76,7 @@ async def fetch_model_name(
     set_current_model: Annotated[bool, Body()] = False,
 ):
     if model_alias is None and model_version is None:
-        return HTTPException(
+        raise HTTPException(
             status_code=400, detail="Either model_alias or model_version has to be provided."
         )
     
@@ -93,6 +93,6 @@ async def list_models():
     try:
         models = list_local_models()
     except ModelNotAvailableError:
-        return HTTPException(status_code=503)
+        raise HTTPException(status_code=503)
     
     return {"models": models}
