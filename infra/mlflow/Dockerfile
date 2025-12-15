@@ -18,6 +18,6 @@ CMD ["mlflow", "server", \
     "--backend-store-uri", \
     "postgresql://root:postgres@my-postgres.docker-net:5432/database", \
     "--serve-artifacts", \
-    "--allowed-hosts", "*.docker-net:*,localhost:*", \
-    "--cors-allowed-origins", "http://*.docker-net" \
+    "--allowed-hosts", "*.docker-net:*,*.localhost,localhost:*", \
+    "--cors-allowed-origins", "http://*.docker-net,http://*.localhost" \
     ]
