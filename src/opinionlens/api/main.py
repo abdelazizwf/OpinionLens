@@ -3,12 +3,9 @@ from typing import Annotated
 from fastapi import Body, FastAPI, HTTPException
 
 from opinionlens.api.exceptions import ModelNotAvailableError
-from opinionlens.api.inference import (
-    fetch_model_by_id,
-    fetch_model_by_name,
-    list_local_models,
-    make_prediction,
-)
+from opinionlens.api.models import ModelManager
+
+model_manager = ModelManager()
 
 app = FastAPI()
 
@@ -31,9 +28,10 @@ async def about():
 @app.get("/v1/predict")
 async def predict(text: str):
     try:
-        prediction = make_prediction(text)
-    except ModelNotAvailableError:
-        raise HTTPException(status_code=503)
+        model = model_manager.get_default_model()
+        prediction = model.predict(text)
+    except ModelNotAvailableError as e:
+        raise HTTPException(status_code=503, detail=e.message)
     
     prediction = "POSITIVE" if prediction == 1 else "NEGATIVE"
     return {"prediction": prediction}
@@ -41,58 +39,73 @@ async def predict(text: str):
 
 @app.post("/v1/batch_predict")
 async def batch_predict(
-    text_batch: Annotated[list[str], Body()],
+    batch: Annotated[list[str], Body()],
 ) -> list[str]:
-    response = []
-    for text in text_batch:
-        try:
-            prediction = make_prediction(text)
-        except ModelNotAvailableError:
-            raise HTTPException(status_code=503)
-        
-        response.append("POSITIVE" if prediction == 1 else "NEGATIVE")
+    try:
+        model = model_manager.get_default_model()
+        predictions = model.batch_predict(batch)
+    except ModelNotAvailableError as e:
+        raise HTTPException(status_code=503, detail=e.message)
+    
+    response = [
+        "POSITIVE" if prediction == 1 else "NEGATIVE" for prediction in predictions
+    ]
     
     return response
 
 
-@app.post("/v1/_/fetch_model/id")
+@app.post("/v1/_/models/id")
 async def fetch_model_id(
     model_id: Annotated[str, Body()],
-    set_current_model: Annotated[bool, Body()] = False,
+    warm: Annotated[bool, Body()] = False,
+    set_default: Annotated[bool, Body()] = False,
 ):
-    model_path = fetch_model_by_id(
-        model_id, set_current_model
-    )
+    model_path = model_manager.fetch_model_by_id(model_id)
+    message = f"Model {model_id!r} saved at {model_path!r}"
+    
+    if warm or set_default:
+        model_manager.warm_model(model_id)
+        message += " and warmed"
+    
+    if set_default:
+        model_manager.set_default(model_id)
+        message += " and set as default"
+    
     return {
-        "message": f"Model saved at {model_path!r}",
+        "message": message,
     }
 
 
-@app.post("/v1/_/fetch_model/name")
+@app.post("/v1/_/models/name")
 async def fetch_model_name(
     model_name: Annotated[str, Body()],
     model_alias: Annotated[str | None, Body()] = None,
     model_version: Annotated[int | None, Body()] = None,
-    set_current_model: Annotated[bool, Body()] = False,
+    warm: Annotated[bool, Body()] = False,
+    set_default: Annotated[bool, Body()] = False,
 ):
     if model_alias is None and model_version is None:
         raise HTTPException(
-            status_code=400, detail="Either model_alias or model_version has to be provided."
+            status_code=400, detail="Either model_alias or model_version must be provided."
         )
     
-    model_path = fetch_model_by_name(
-        model_name, model_alias, model_version, set_current_model
-    )
+    model_path, model_id = model_manager.fetch_model_by_name(model_name, model_version, model_alias)
+    message = f"Model {model_id!r} saved at {model_path!r}"
+    
+    if warm or set_default:
+        model_manager.warm_model(model_id)
+        message += " and warmed"
+    
+    if set_default:
+        model_manager.set_default(model_id)
+        message += " and set as default"
+    
     return {
-        "message": f"Model saved at {model_path!r}",
+        "message": message,
     }
 
 
-@app.get("/v1/_/list_models")
-async def list_models():
-    try:
-        models = list_local_models()
-    except ModelNotAvailableError:
-        raise HTTPException(status_code=503)
-    
+@app.get("/v1/_/models")
+async def list_models(hot_only: bool = False):
+    models = model_manager.list_models(hot_only)
     return {"models": models}
