@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Body, FastAPI, HTTPException
 
-from opinionlens.api.exceptions import ModelNotAvailableError
+from opinionlens.api.exceptions import ModelNotAvailableError, OperationalError
 from opinionlens.api.models import ModelManager
 
 model_manager = ModelManager()
@@ -30,8 +30,8 @@ async def predict(text: str):
     try:
         model = model_manager.get_default_model()
         prediction = model.predict(text)
-    except ModelNotAvailableError as e:
-        raise HTTPException(status_code=503, detail=e.message)
+    except (ModelNotAvailableError, OperationalError) as e:
+        raise HTTPException(status_code=503, detail=f"{type(e).__name__}: {e.message}")
     
     prediction = "POSITIVE" if prediction == 1 else "NEGATIVE"
     return {"prediction": prediction}
@@ -44,8 +44,8 @@ async def batch_predict(
     try:
         model = model_manager.get_default_model()
         predictions = model.batch_predict(batch)
-    except ModelNotAvailableError as e:
-        raise HTTPException(status_code=503, detail=e.message)
+    except (ModelNotAvailableError, OperationalError) as e:
+        raise HTTPException(status_code=503, detail=f"{type(e).__name__}: {e.message}")
     
     response = [
         "POSITIVE" if prediction == 1 else "NEGATIVE" for prediction in predictions
@@ -68,7 +68,11 @@ async def fetch_model_id(
         message += " and warmed"
     
     if set_default:
-        model_manager.set_default(model_id)
+        try:
+            model_manager.set_default(model_id)
+        except (ModelNotAvailableError, OperationalError) as e:
+            raise HTTPException(status_code=503, detail=f"{type(e).__name__}: {e.message}")
+        
         message += " and set as default"
     
     return {
@@ -97,7 +101,11 @@ async def fetch_model_name(
         message += " and warmed"
     
     if set_default:
-        model_manager.set_default(model_id)
+        try:
+            model_manager.set_default(model_id)
+        except (ModelNotAvailableError, OperationalError) as e:
+            raise HTTPException(status_code=503, detail=f"{type(e).__name__}: {e.message}")
+        
         message += " and set as default"
     
     return {
