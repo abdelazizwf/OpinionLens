@@ -3,9 +3,7 @@ from typing import Annotated
 from fastapi import Body, FastAPI, HTTPException
 
 from opinionlens.api.exceptions import ModelNotAvailableError, OperationalError
-from opinionlens.api.models import ModelManager
-
-model_manager = ModelManager()
+from opinionlens.api.managers import model_manager
 
 app = FastAPI()
 
