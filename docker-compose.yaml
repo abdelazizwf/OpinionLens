@@ -1,10 +1,8 @@
 services:
-  my-postgres:
+  postgres:
     image: postgres:latest
     pull_policy: never
-    container_name: my-postgres
-    ports:
-      - 5432:5432
+    container_name: postgres
     volumes:
       - /var/lib/postgresql
       - ./configs/postgres:/docker-entrypoint-initdb.d
@@ -14,16 +12,22 @@ services:
     networks:
       - docker-net
     restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.db-http.rule=Host(`db.localhost`)
+      - traefik.http.routers.db-http.entrypoints=web
+    expose:
+      - 5432
 
-  my-mlflow:
+  mlflow:
     image: custom-mlflow
     pull_policy: never
-    container_name: my-mlflow
+    container_name: mlflow
     build:
       context: ./infra/mlflow
       dockerfile: Dockerfile
-    ports:
-      - 5000:5000
+    expose:
+      - 5000
     volumes:
       - /mlflow
     networks:
@@ -34,15 +38,15 @@ services:
       - traefik.http.routers.mlflow-http.rule=Host(`mlflow.localhost`)
       - traefik.http.routers.mlflow-http.entrypoints=web
   
-  my-api:
+  api:
     image: api
     pull_policy: never
-    container_name: my-api
+    container_name: api
     build:
       context: .
       dockerfile: Dockerfile
-    # ports:
-      # - 8000:80
+    expose:
+      - 80
     networks:
       - docker-net
     restart: unless-stopped
@@ -53,7 +57,7 @@ services:
   
   traefik:
     image: traefik:v3.6
-    container_name: my-traefik
+    container_name: traefik
     ports:
       - "80:80"
       - "443:443"
@@ -68,7 +72,70 @@ services:
       - traefik.enable=true
       - traefik.http.routers.dashboard.rule=Host(`dashboard.localhost`)
       - traefik.http.routers.dashboard.entrypoints=web
+  
+  node-exporter:
+    privileged: true
+    image: prom/node-exporter:master
+    container_name: node-exporter
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - docker-net
+    expose:
+      - 9100
+  
+  prometheus:
+    image: prom/prometheus:main
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./configs/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    expose:
+      - 9090
+    networks:
+      - docker-net
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.prometheus-http.rule=Host(`prometheus.localhost`)
+      - traefik.http.routers.prometheus-http.entrypoints=web
+  
+  grafana:
+    image: grafana/grafana:main
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      - TERM=linux
+      - GF_PLUGINS_PREINSTALL=grafana-clock-panel,grafana-polystat-panel
+    expose:
+      - 3000
+    networks:
+      - docker-net
+    volumes:
+      - 'grafana_storage:/var/lib/grafana'
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.grafana-http.rule=Host(`grafana.localhost`)
+      - traefik.http.routers.grafana-http.entrypoints=web
 
 networks:
   docker-net:
     external: true
+
+volumes:
+  prometheus_data: {}
+  grafana_storage: {}
