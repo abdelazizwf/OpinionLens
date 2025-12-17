@@ -9,14 +9,23 @@ def get_logger(
 ) -> logging.Logger:
     fmt = "%(asctime)s %(name)s %(levelname)s: %(message)s"
     date_fmt = "%H:%M:%S"
-    logging.basicConfig(
-        level=level,
-        format=fmt,
-        datefmt=date_fmt,
-        filename=filename,
-        filemode="w"
-    )
-    return logging.getLogger(name)
+    formatter = logging.Formatter(fmt=fmt, datefmt=date_fmt)
+    
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+    
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(level)
+    stream_handler.setFormatter(formatter)
+    logger.addHandler(stream_handler)
+    
+    if filename is not None:
+        file_handler  = logging.FileHandler(filename, mode="w")
+        file_handler.setLevel(level)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+    
+    return logger
 
 
 def get_timestamp() -> str:
