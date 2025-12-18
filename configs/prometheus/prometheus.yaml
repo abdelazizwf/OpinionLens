@@ -10,3 +10,15 @@ scrape_configs:
   - job_name: node
     static_configs:
       - targets: ["node-exporter.docker-net:9100"]
+
+  - job_name: traefik
+    static_configs:
+      - targets: ["traefik.docker-net:8080"]
+
+  - job_name: grafana
+    static_configs:
+      - targets: ["grafana.docker-net:3000"]
+
+  - job_name: postgres
+    static_configs:
+      - targets: ["postgres-exporter.docker-net:9187"]

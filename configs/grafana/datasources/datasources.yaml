@@ -1,0 +1,6 @@
+datasources:
+  - name: Prometheus
+    url: http://prometheus.docker-net:9090
+    type: prometheus
+    access: proxy
+    uid: ds_prometheus

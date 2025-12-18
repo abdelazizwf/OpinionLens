@@ -14,17 +14,30 @@ services:
     restart: unless-stopped
     labels:
       - traefik.enable=true
-      - traefik.http.routers.db-http.rule=Host(`db.localhost`)
+      - traefik.http.routers.db-http.rule=Host(`postgres.localhost`)
       - traefik.http.routers.db-http.entrypoints=web
     expose:
       - 5432
+  
+  postgres-exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:latest
+    container_name: postgres-exporter
+    expose:
+      - 9187
+    restart: unless-stopped
+    networks:
+      - docker-net
+    environment:
+      - DATA_SOURCE_URI=postgres.docker-net:5432/database?sslmode=disable
+      - DATA_SOURCE_USER=root
+      - DATA_SOURCE_PASS=postgres
 
   mlflow:
     image: custom-mlflow
     pull_policy: never
     container_name: mlflow
     build:
-      context: ./infra/mlflow
+      context: ./configs/mlflow
       dockerfile: Dockerfile
     expose:
       - 5000
@@ -64,14 +77,14 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./infra/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro
+      - ./configs/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro
     networks:
       - docker-net
     restart: unless-stopped
     labels:
       - traefik.enable=true
-      - traefik.http.routers.dashboard.rule=Host(`dashboard.localhost`)
-      - traefik.http.routers.dashboard.entrypoints=web
+      - traefik.http.routers.traefik.rule=Host(`traefik.localhost`)
+      - traefik.http.routers.traefik.entrypoints=web
   
   node-exporter:
     privileged: true
@@ -121,12 +134,15 @@ services:
     environment:
       - TERM=linux
       - GF_PLUGINS_PREINSTALL=grafana-clock-panel,grafana-polystat-panel
+      - DS_PROMETHEUS=ds_prometheus
     expose:
       - 3000
     networks:
       - docker-net
     volumes:
-      - 'grafana_storage:/var/lib/grafana'
+      - grafana_storage:/var/lib/grafana
+      - ./configs/grafana/dashboards:/etc/grafana/provisioning/dashboards/
+      - ./configs/grafana/datasources:/etc/grafana/provisioning/datasources/
     labels:
       - traefik.enable=true
       - traefik.http.routers.grafana-http.rule=Host(`grafana.localhost`)
