@@ -12,6 +12,7 @@ def get_logger(
     formatter = logging.Formatter(fmt=fmt, datefmt=date_fmt)
     
     logger = logging.getLogger(name)
+    logger.handlers.clear()
     logger.setLevel(level)
     
     stream_handler = logging.StreamHandler()
