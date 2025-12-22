@@ -1428,8 +1428,8 @@ dev = [
     { name = "wordcloud" },
 ]
 test = [
+    { name = "httpx" },
     { name = "pytest" },
-    { name = "requests" },
 ]
 
 [package.metadata]
@@ -1451,8 +1451,8 @@ dev = [
     { name = "wordcloud", specifier = ">=1.9.4" },
 ]
 test = [
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "pytest", specifier = ">=9.0.2" },
-    { name = "requests", specifier = ">=2.32.5" },
 ]
 
 [[package]]
