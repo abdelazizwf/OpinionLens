@@ -54,6 +54,7 @@ async def about():
 
 @app.get("/api/v1/predict")
 async def predict(text: str):
+    """Predict the sentiment of a single text."""
     try:
         model = model_manager.get_default_model()
         prediction = model.predict(text)
@@ -66,6 +67,7 @@ async def predict(text: str):
 
 @app.post("/api/v1/predict")
 async def encrypted_predict(text: Annotated[str, Body(embed=True)]):
+    """Predict the sentiment of a single text."""
     return await predict(text)
 
 
@@ -73,6 +75,7 @@ async def encrypted_predict(text: Annotated[str, Body(embed=True)]):
 async def batch_predict(
     batch: Annotated[list[str], Body()],
 ) -> list[str]:
+    """Predict the sentiments of multiple texts."""
     try:
         model = model_manager.get_default_model()
         predictions = model.batch_predict(batch)

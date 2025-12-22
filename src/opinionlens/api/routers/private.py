@@ -17,6 +17,7 @@ async def fetch_model(
     model_uri: Annotated[str, Body()],
     set_default: Annotated[bool, Body()] = False,
 ):
+    """Retrieve a new model from the model registry."""
     if not model_uri.startswith("models:/"):
         model_uri = "models:/" + model_uri
     
@@ -43,20 +44,21 @@ async def fetch_model(
 
 @router.get("/models")
 async def list_models():
-    models = model_manager.list_models()
+    """List the details of all available models."""
+    models = model_manager.get_model_info()
     return models
 
 
 @router.get("/models/{model_id}")
 async def list_model(model_id: str):
-    model = [m for m in model_manager.list_models() if m["model_id"] == model_id][0]
+    """List the details of a given model."""
+    model = model_manager.get_model_info(model_id)
     return model
 
 
 @router.delete("/models/{model_id}")
-async def delete_model(
-    model_id: str,
-):
+async def delete_model(model_id: str):
+    """Remove the given model from the backend."""
     try:
         model_manager.delete_model(model_id)
     except (ModelNotAvailableError, OperationalError) as e:

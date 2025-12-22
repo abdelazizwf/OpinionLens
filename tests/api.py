@@ -44,8 +44,6 @@ def test_add_model_route():
 
 
 def test_list_models_route():
-    global SAVED_MODEL_ID
-    
     url = "/api/v1/_/models"
     response = client.get(url)
     
@@ -53,13 +51,13 @@ def test_list_models_route():
     
     response_body = response.json()
     
-    assert type(response_body) is list
+    assert type(response_body) is dict
     
     if response_body:
-        element = response_body[0]
+        element = list(response_body.values())[0]
         
         assert type(element) is dict
-        assert len(element) == 8
+        assert len(element) == 7
 
 
 def test_list_single_model_route():
@@ -76,12 +74,11 @@ def test_list_single_model_route():
     response_body = response.json()
     
     assert type(response_body) is dict
-    assert len(response_body) == 8
-    assert response_body["model_id"] == SAVED_MODEL_ID
+    assert len(response_body) == 7
     assert response_body["is_default"] is True
 
 
-def test_single_prediction_route():
+def test_prediction_route():
     url = "/api/v1/predict"
     params = {"text": "I love this so much!"}
     response = client.get(url, params=params)
@@ -129,3 +126,5 @@ def test_delete_model_route():
     
     assert response.status_code == 200
     assert type(response.json()) is dict
+    
+    SAVED_MODEL_ID = None
