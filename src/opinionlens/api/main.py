@@ -37,12 +37,12 @@ app = FastAPI(
 app.include_router(private.router)
 
 
-@app.get("/")
+@app.get("/api/v1")
 async def root():
     return {"message": "Welcome to OpinionLens!"}
 
 
-@app.get("/about")
+@app.get("/api/v1/about")
 async def about():
     return {
         "name": "OpinionLens",
@@ -52,7 +52,7 @@ async def about():
     }
 
 
-@app.get("/v1/predict")
+@app.get("/api/v1/predict")
 async def predict(text: str):
     try:
         model = model_manager.get_default_model()
@@ -64,7 +64,12 @@ async def predict(text: str):
     return {"prediction": prediction}
 
 
-@app.post("/v1/batch_predict")
+@app.post("/api/v1/predict")
+async def encrypted_predict(text: Annotated[str, Body(embed=True)]):
+    return await predict(text)
+
+
+@app.post("/api/v1/batch_predict")
 async def batch_predict(
     batch: Annotated[list[str], Body()],
 ) -> list[str]:

@@ -7,7 +7,7 @@ from opinionlens.api.exceptions import ModelNotAvailableError, OperationalError
 from opinionlens.api.managers import model_manager
 
 router = APIRouter(
-    prefix="/v1/_",
+    prefix="/api/v1/_",
     tags=["private"],
 )
 
@@ -36,6 +36,7 @@ async def fetch_model(
         message += " and set as default"
     
     return {
+        "model_id": model_id,
         "message": message,
     }
 
@@ -46,9 +47,15 @@ async def list_models():
     return models
 
 
-@router.delete("/models")
+@router.get("/models/{model_id}")
+async def list_model(model_id: str):
+    model = [m for m in model_manager.list_models() if m["model_id"] == model_id][0]
+    return model
+
+
+@router.delete("/models/{model_id}")
 async def delete_model(
-    model_id: Annotated[str, Body(embed=True)],
+    model_id: str,
 ):
     try:
         model_manager.delete_model(model_id)
