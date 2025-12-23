@@ -19,7 +19,7 @@ LOGGING_LEVEL = os.environ["LOGGING_LEVEL"]
 class __ModelManager:
     """A class to manage models saved on disk at the backend.
     
-    DO NOT INSTANTIATE, use `opinionlens.api.manager.model_manager` instead.
+    **DO NOT INSTANTIATE**, use `opinionlens.api.manager.model_manager` instead.
     """
     
     def __init__(self):
@@ -117,6 +117,10 @@ class __ModelManager:
         
         Returns:
             The default model object.
+        
+        Raises:
+            ModelNotAvailableError: No default model set.
+            OperationalError: The default model doesn't exist.
         """
         if self._default_model_id is None:
             raise ModelNotAvailableError("No default model set.")
@@ -142,14 +146,12 @@ class __ModelManager:
             The path of the model directory and the model id.
         
         Raises:
-            OperationalError: An error occurred downloading the model.
+            MlflowException: An error occurred downloading the model.
                 Check MLflow service status or the provided URI.
         """
-        try:
-            model_info = mlflow.models.get_model_info(model_uri)
-            model_id = model_info.model_id
-        except mlflow.exceptions.MlflowException as e:
-            raise OperationalError(f"MLflow error: {e.message}")
+        # Propagate Mlflow exception
+        model_info = mlflow.models.get_model_info(model_uri)
+        model_id = model_info.model_id
         
         if self._model_exists(model_id):
             self._logger.info(f"Model {model_id!r}, requested as {model_uri!r}, is already loaded.")
@@ -174,9 +176,15 @@ class __ModelManager:
         Returns:
             A dictionary containing the requested model's information, or
             a dictionary with all loaded model IDs pointing to the model's information.
+        
+        Raises:
+            ModelNotAvailableError: The requested model doesn't exist.
         """
         if model_id:
-            return self._model_infos[model_id]
+            try:
+                return self._model_infos[model_id]
+            except KeyError:
+                raise ModelNotAvailableError(f"Model {model_id!r} doesn't exist.")
         else:
             return self._model_infos
     
@@ -188,6 +196,9 @@ class __ModelManager:
         
         Args:
             model_id: The ID of the model.
+        
+        Raises:
+            ModelNotAvailableError: The requested model doesn't exist.
         """
         if not self._model_exists(model_id):
             raise ModelNotAvailableError(f"Model {model_id!r} doesn't exist.")
@@ -206,6 +217,9 @@ class __ModelManager:
         
         Args:
             model_id: The ID of the model.
+        
+        Raises:
+            OperationalError: The model doesn't exist.
         """
         if not self._model_exists(model_id):
             raise OperationalError(f"Model {model_id!r} doesn't exist and can't be the default.")

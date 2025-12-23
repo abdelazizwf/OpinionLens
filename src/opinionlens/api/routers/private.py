@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 
-@router.post("/models")
+@router.post("/models", status_code=201)
 async def fetch_model(
     model_uri: Annotated[str, Body()],
     set_default: Annotated[bool, Body()] = False,
@@ -31,7 +31,9 @@ async def fetch_model(
     if set_default:
         try:
             model_manager.set_default(model_id)
-        except (ModelNotAvailableError, OperationalError) as e:
+        except ModelNotAvailableError as e:
+            raise HTTPException(status_code=404, detail=f"{type(e).__name__}: {e.message}")
+        except OperationalError as e:
             raise HTTPException(status_code=503, detail=f"{type(e).__name__}: {e.message}")
         
         message += " and set as default"
@@ -52,7 +54,11 @@ async def list_models():
 @router.get("/models/{model_id}")
 async def list_model(model_id: str):
     """List the details of a given model."""
-    model = model_manager.get_model_info(model_id)
+    try:
+        model = model_manager.get_model_info(model_id)
+    except ModelNotAvailableError as e:
+        raise HTTPException(status_code=404, detail=f"{e.message}")
+    
     return model
 
 
@@ -61,7 +67,9 @@ async def delete_model(model_id: str):
     """Remove the given model from the backend."""
     try:
         model_manager.delete_model(model_id)
-    except (ModelNotAvailableError, OperationalError) as e:
+    except ModelNotAvailableError as e:
+        raise HTTPException(status_code=404, detail=f"{type(e).__name__}: {e.message}")
+    except OperationalError as e:
         raise HTTPException(status_code=503, detail=f"{type(e).__name__}: {e.message}")
     
     return {"message": f"Model {model_id!r} was deleted successfully."}

@@ -12,10 +12,6 @@ services:
     networks:
       - docker-net
     restart: unless-stopped
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.db-http.rule=Host(`postgres.localhost`)
-      - traefik.http.routers.db-http.entrypoints=web
     expose:
       - 5432
   
@@ -83,8 +79,8 @@ services:
     restart: unless-stopped
     labels:
       - traefik.enable=true
-      - traefik.http.routers.traefik.rule=Host(`traefik.localhost`)
-      - traefik.http.routers.traefik.entrypoints=web
+      - traefik.http.routers.traefik-http.rule=Host(`traefik.localhost`)
+      - traefik.http.routers.traefik-http.entrypoints=web
   
   node-exporter:
     privileged: true
