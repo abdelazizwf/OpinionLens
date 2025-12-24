@@ -5,7 +5,7 @@ RUN pip install uv
 RUN mkdir /app && mkdir /app/models
 WORKDIR /app
 
-COPY .python-version params.yaml pyproject.toml uv.lock README.md ./
+COPY .python-version params.yaml pyproject.toml uv.lock README.md LICENSE ./
 COPY .env.prod ./.env
 COPY src ./src
 COPY tests ./tests

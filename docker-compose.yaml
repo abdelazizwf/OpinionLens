@@ -1,7 +1,6 @@
 services:
   postgres:
-    image: postgres:latest
-    pull_policy: never
+    image: postgres:18.1-trixie
     container_name: postgres
     volumes:
       - /var/lib/postgresql
@@ -30,7 +29,6 @@ services:
 
   mlflow:
     image: custom-mlflow
-    pull_policy: never
     container_name: mlflow
     build:
       context: ./configs/mlflow
@@ -49,7 +47,6 @@ services:
   
   api:
     image: api
-    pull_policy: never
     container_name: api
     build:
       context: .
@@ -65,7 +62,7 @@ services:
       - traefik.http.routers.api-http.entrypoints=web
   
   traefik:
-    image: traefik:v3.6
+    image: traefik:v3.6.5
     container_name: traefik
     ports:
       - "80:80"
@@ -91,18 +88,21 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     command:
       - '--path.procfs=/host/proc'
       - '--path.rootfs=/rootfs'
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+      - '--collector.cgroups'
     networks:
       - docker-net
+    pid: host
     expose:
       - 9100
   
   prometheus:
-    image: prom/prometheus:main
+    image: prom/prometheus:v3.8.1
     container_name: prometheus
     restart: unless-stopped
     volumes:
@@ -124,7 +124,7 @@ services:
       - traefik.http.routers.prometheus-http.entrypoints=web
   
   grafana:
-    image: grafana/grafana:main
+    image: grafana/grafana:12.3
     container_name: grafana
     restart: unless-stopped
     environment:

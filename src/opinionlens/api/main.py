@@ -1,40 +1,32 @@
+from contextlib import asynccontextmanager
 from typing import Annotated
 
 from fastapi import Body, FastAPI, HTTPException
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from opinionlens.api.exceptions import ModelNotAvailableError, OperationalError
+from opinionlens.api.info import app_info
 from opinionlens.api.managers import model_manager
 from opinionlens.api.routers import private
 
-description = """
-A production-ready sentiment analysis pipeline leveraging local ML training, DVC data versioning, MLflow model registry, Dockerized services, and Prometheus/Grafana monitoring.
+instrumentator = Instrumentator()
 
-## Planned Features
 
-- Monitoring stack with Prometheus and Grafana
-- Reverse proxy configuration with Traefik
-- Training and deploying deep models
-- Model interpretability
-- More raw data and using sampling techniques for training data
-- Extensive testing
-"""
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global instrumentator
+    instrumentator.expose(app)
+    yield
+
 
 app = FastAPI(
-    title="OpinionLens",
-    description=description,
-    summary="AI-powered sentiment analysis with reproducible models and scalable deployment.",
-    version="0.0.2",
-    contact={
-        "name": "Abdelaziz W. Farahat",
-        "email": "abdelaziz.w.f@gmail.com",
-    },
-    license_info={
-        "name": "Apache-2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
-    },
+    **app_info,
+    lifespan=lifespan,
 )
 
 app.include_router(private.router)
+
+instrumentator = instrumentator.instrument(app)
 
 
 @app.get("/api/v1")
@@ -44,12 +36,7 @@ async def root():
 
 @app.get("/api/v1/about")
 async def about():
-    return {
-        "name": "OpinionLens",
-        "version": "0.0.2",
-        "author": "Abdelaziz W. Farahat",
-        "description": "A production-ready sentiment analysis pipeline leveraging local ML training, DVC data versioning, MLflow model registry, Dockerized inference, and Prometheus/Grafana monitoring.",
-    }
+    return app_info
 
 
 @app.get("/api/v1/predict")
