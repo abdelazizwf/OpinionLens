@@ -25,7 +25,7 @@ dev = [
     "optuna>=4.6.0",
     "wordcloud>=1.9.4",
 ]
-test = ["httpx>=0.28.1", "pytest>=9.0.2"]
+test = ["httpx>=0.28.1", "locust>=2.42.6", "pytest>=9.0.2"]
 
 [project.scripts]
 preprocess_data = "opinionlens.preprocessing.scripts.preprocess_data:main"

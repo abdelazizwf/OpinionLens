@@ -8,7 +8,6 @@ WORKDIR /app
 COPY .python-version params.yaml pyproject.toml uv.lock README.md LICENSE ./
 COPY .env.prod ./.env
 COPY src ./src
-COPY tests ./tests
 COPY objects ./objects
 
 RUN uv sync --no-dev
