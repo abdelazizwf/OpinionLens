@@ -8,6 +8,7 @@ from opinionlens.common.utils import get_logger
 from opinionlens.preprocessing import clean_text, get_saved_tfidf_vectorizer, tokenizer
 
 SAVED_MODEL_PATH = os.environ["API_SAVED_MODEL_PATH"]
+LOGGING_LEVEL = os.environ["LOGGING_LEVEL"]
 
 
 class Model:
@@ -36,7 +37,7 @@ class SklearnModel(Model):
         """
         self.model_id = model_id
         self.pyfunc_model = mlflow.pyfunc.load_model(model_path)
-        self._logger = get_logger(self.__class__.__name__, level=10)
+        self._logger = get_logger(self.__class__.__name__, level=LOGGING_LEVEL)
     
     def preprocess_text(self, text: str) -> spmatrix:
         """Preprocess the input text.
