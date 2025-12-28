@@ -13,7 +13,7 @@ n_jobs = conf.training.n_jobs
 
 class LogisticRegressionSubject:
     mlflow_run_name = "sklearn-log_reg-tuning"
-    
+
     @classmethod
     def get_params(cls, trial: Trial) -> dict:
         params = {
@@ -22,7 +22,7 @@ class LogisticRegressionSubject:
             "C": trial.suggest_float("C", 1e-3, 10.0, log=True),
         }
         return params
-    
+
     @classmethod
     def get_model(cls, params: dict) -> LogisticRegression:
         return LogisticRegression(**params, random_state=random_state)
@@ -30,7 +30,7 @@ class LogisticRegressionSubject:
 
 class LinearSVCSubject:
     mlflow_run_name = "sklearn-lin_svc-tuning"
-    
+
     @classmethod
     def get_params(cls, trial: Trial) -> dict:
         params = {
@@ -38,7 +38,7 @@ class LinearSVCSubject:
             "C": trial.suggest_float("C", 1e-3, 10.0, log=True),
         }
         return params
-    
+
     @classmethod
     def get_model(cls, params: dict) -> LinearSVC:
         return LinearSVC(**params, random_state=random_state)
@@ -46,7 +46,7 @@ class LinearSVCSubject:
 
 class KNNSubject:
     mlflow_run_name = "sklearn-knn-tuning"
-    
+
     @classmethod
     def get_params(cls, trial: Trial) -> dict:
         params = {
@@ -56,7 +56,7 @@ class KNNSubject:
             "p": trial.suggest_float("p", 0.5, 3.0),
         }
         return params
-    
+
     @classmethod
     def get_model(cls, params: dict) -> KNeighborsClassifier:
         return KNeighborsClassifier(**params, n_jobs=n_jobs)
@@ -64,7 +64,7 @@ class KNNSubject:
 
 class DecisionTreeSubject:
     mlflow_run_name = "sklearn_decision-tree_tuning"
-    
+
     @classmethod
     def get_params(cls, trial: Trial) -> dict:
         params = {
@@ -72,7 +72,7 @@ class DecisionTreeSubject:
             "max_depth": trial.suggest_int("max_depth", 12, 22),
         }
         return params
-    
+
     @classmethod
     def get_model(cls, params: dict) -> DecisionTreeClassifier:
         return DecisionTreeClassifier(**params, random_state=random_state)
@@ -80,7 +80,7 @@ class DecisionTreeSubject:
 
 class BaggingLinearSVCSubject:
     mlflow_run_name = "sklearn-bagging_lin_svc-tuning"
-    
+
     @classmethod
     def get_params(cls, trial: Trial) -> dict:
         params = {
@@ -88,7 +88,7 @@ class BaggingLinearSVCSubject:
             "max_samples": trial.suggest_float("max_samples", 0.25, 1.0),
         }
         return params
-    
+
     @classmethod
     def get_model(cls, params: dict) -> BaggingClassifier:
         return BaggingClassifier(
@@ -100,7 +100,7 @@ class BaggingLinearSVCSubject:
 
 class RandomForestSubject:
     mlflow_run_name = "sklearn-random_forest-tuning"
-    
+
     @classmethod
     def get_params(cls, trial: Trial) -> dict:
         params = {
@@ -108,7 +108,7 @@ class RandomForestSubject:
             "n_estimators": trial.suggest_int("n_estimators", 50, 500),
         }
         return params
-    
+
     @classmethod
     def get_model(cls, params: dict) -> RandomForestClassifier:
         return RandomForestClassifier(**params, n_jobs=n_jobs, random_state=random_state)

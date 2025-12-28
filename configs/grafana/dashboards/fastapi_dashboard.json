@@ -24,7 +24,7 @@
     {
       "datasource": {
         "type": "prometheus"
-        
+
       },
       "fieldConfig": {
         "defaults": {
@@ -110,7 +110,7 @@
           "$$hashKey": "object:214",
           "datasource": {
             "type": "prometheus"
-            
+
           },
           "editorMode": "code",
           "expr": "increase(http_requests_total{job=\"api\"}[1m])",
@@ -128,7 +128,7 @@
     {
       "datasource": {
         "type": "prometheus"
-        
+
       },
       "fieldConfig": {
         "defaults": {
@@ -245,7 +245,7 @@
           "$$hashKey": "object:140",
           "datasource": {
             "type": "prometheus"
-            
+
           },
           "editorMode": "code",
           "expr": "sum by (status) (rate(http_requests_total{\"job\"=\"api\"}[1m]))",
@@ -263,7 +263,7 @@
     {
       "datasource": {
         "type": "prometheus"
-        
+
       },
       "fieldConfig": {
         "defaults": {
@@ -365,7 +365,7 @@
           "$$hashKey": "object:766",
           "datasource": {
             "type": "prometheus"
-            
+
           },
           "editorMode": "code",
           "expr": "sum(rate(http_requests_total{status=\"5xx\",\"job\"=\"api\"}[30s]))",
@@ -383,7 +383,7 @@
     {
       "datasource": {
         "type": "prometheus"
-        
+
       },
       "fieldConfig": {
         "defaults": {
@@ -470,7 +470,7 @@
           "$$hashKey": "object:146",
           "datasource": {
             "type": "prometheus"
-            
+
           },
           "editorMode": "code",
           "expr": "http_request_duration_seconds_sum{job=\"api\",handler!=\"none\"} / http_request_duration_seconds_count{\"job\"=\"api\"}",
@@ -488,7 +488,7 @@
     {
       "datasource": {
         "type": "prometheus"
-        
+
       },
       "description": "",
       "fieldConfig": {
@@ -577,7 +577,7 @@
           "$$hashKey": "object:426",
           "datasource": {
             "type": "prometheus"
-            
+
           },
           "editorMode": "code",
           "expr": "histogram_quantile(0.5, rate(http_request_duration_seconds_bucket{handler!=\"none\",\"job\"=\"api\"}[30s]))",
@@ -595,7 +595,7 @@
     {
       "datasource": {
         "type": "prometheus"
-        
+
       },
       "fieldConfig": {
         "defaults": {
@@ -679,7 +679,7 @@
           "$$hashKey": "object:638",
           "datasource": {
             "type": "prometheus"
-            
+
           },
           "editorMode": "code",
           "expr": "process_resident_memory_bytes{job=\"node\"}",
@@ -697,7 +697,7 @@
     {
       "datasource": {
         "type": "prometheus"
-        
+
       },
       "fieldConfig": {
         "defaults": {
@@ -782,7 +782,7 @@
           "$$hashKey": "object:638",
           "datasource": {
             "type": "prometheus"
-            
+
           },
           "editorMode": "code",
           "expr": "rate(process_cpu_seconds_total{job=\"node\"}[30s])",
@@ -800,7 +800,7 @@
     {
       "datasource": {
         "type": "prometheus"
-        
+
       },
       "fieldConfig": {
         "defaults": {
@@ -902,7 +902,7 @@
           "$$hashKey": "object:1079",
           "datasource": {
             "type": "prometheus"
-            
+
           },
           "editorMode": "code",
           "expr": "increase(http_request_duration_seconds_bucket{le=\"0.1\",\"job\"=\"api\"}[1m]) \n/ ignoring (le) increase(http_request_duration_seconds_count{\"job\"=\"api\"}[1m])",
@@ -920,7 +920,7 @@
     {
       "datasource": {
         "type": "prometheus"
-        
+
       },
       "fieldConfig": {
         "defaults": {
@@ -1007,7 +1007,7 @@
           "$$hashKey": "object:426",
           "datasource": {
             "type": "prometheus"
-            
+
           },
           "editorMode": "code",
           "expr": "histogram_quantile(0.9, rate(http_request_duration_seconds_bucket{handler!=\"none\",\"job\"=\"api\"}[30s]))",

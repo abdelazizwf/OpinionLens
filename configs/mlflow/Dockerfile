@@ -1,6 +1,6 @@
 FROM ghcr.io/mlflow/mlflow:v3.6.0
 
-RUN --mount=type=cache,target=/root/.cache/apt \ 
+RUN --mount=type=cache,target=/root/.cache/apt \
     apt update && \
     apt install -y gcc libpq-dev
 

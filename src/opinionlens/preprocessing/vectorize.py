@@ -12,10 +12,10 @@ def get_tfidf_vectorizer(training_corpus: Collection, save=False) -> TfidfVector
         strip_accents=None, lowercase=False, preprocessor=None, tokenizer=None
     )
     vectorizer.fit(training_corpus)
-    
+
     if save:
         joblib.dump(vectorizer, SAVED_VECTORIZER_PATH)
-    
+
     return vectorizer
 
 
@@ -27,7 +27,7 @@ def get_saved_tfidf_vectorizer() -> TfidfVectorizer:
 
 if __name__ == "__main__":
     import numpy as np
-    
+
     corpus = np.array(["Hello from here it is", "Hello here I am"])
     vectorizer = get_tfidf_vectorizer(corpus)
     print(vectorizer.transform(corpus).toarray())

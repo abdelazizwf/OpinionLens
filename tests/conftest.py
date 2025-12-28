@@ -19,10 +19,10 @@ def added_model_id(test_app):
     }
     response = test_app.post(url, json=body)
     response_body = response.json()
-    
+
     model_id = response_body["model_id"]
     yield model_id
-    
+
     try:
         test_app.delete(f"{url}/{model_id}")
     finally:

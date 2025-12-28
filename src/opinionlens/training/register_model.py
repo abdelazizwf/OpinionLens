@@ -27,7 +27,7 @@ def main():
             name=model_info.name,
             tags=model_info.tags,
         )
-    
+
     print(f"Remote model id: {remote_model_info.model_id}")
     print(f"Remote model name: {remote_model_info.name}")
     print(f"Remote model version: {remote_model_info.registered_model_version}")

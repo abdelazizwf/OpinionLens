@@ -24,13 +24,13 @@ def main():
             direction="maximize",
             storage="sqlite:///optuna.sqlite3",
         )
-        
+
         for n in range(conf.training.n_trials):
             trial = study.ask()
-            
+
             params = subject.get_params(trial)
             model = subject.get_model(params)
-            
+
             with mlflow.start_run(nested=True, run_name=f"trial_{n + 1}") as run:
                 mlflow.log_params(params)
                 model.fit(X_train, y_train)
@@ -38,22 +38,22 @@ def main():
                 metrics = calculate_metrics(y_val, predictions, prefix="val_")
                 mlflow.log_metrics(metrics)
                 trial.set_user_attr("run_name", run.info.run_name)
-            
+
             study.tell(trial, metrics["val_accuracy"])
-        
+
         best_trial = study.best_trial
         best_params = best_trial.params
-        
+
         mlflow.log_params(best_params)
-        
+
         model = subject.get_model(best_params)
-        
+
         mlflow.log_param("best_run", best_trial.user_attrs["run_name"])
         mlflow.log_param("val_accuracy", best_trial.value)
-        
+
         train_vectors, train_scores = concat_data([X_train, X_val], [y_train, y_val])
         model.fit(train_vectors, train_scores)
-        
+
         predictions = model.predict(X_test)
         metrics, con_matrix_fig, roc_fig = calculate_metrics(
             y_test, predictions, prefix="test_", figures=True
@@ -61,7 +61,7 @@ def main():
         mlflow.log_metrics(metrics)
         mlflow.log_figure(con_matrix_fig, "figures/confusion_matrix.png")
         mlflow.log_figure(roc_fig, "figures/roc.png")
-        
+
         exp_name = mlflow.get_experiment(run.info.experiment_id).name
         model_name = exp_name + "-" + "-".join(run_name.split("-")[:2])
         mlflow.sklearn.log_model(

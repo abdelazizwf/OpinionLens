@@ -19,11 +19,11 @@ def load_vectorized_data() -> tuple[Collection]:
     X_train = joblib.load("data/vectorized/train_vectors.pkl")
     X_val = joblib.load("data/vectorized/val_vectors.pkl")
     X_test = joblib.load("data/vectorized/test_vectors.pkl")
-    
+
     y_train = joblib.load("data/vectorized/train_scores.pkl")
     y_val = joblib.load("data/vectorized/val_scores.pkl")
     y_test = joblib.load("data/vectorized/test_scores.pkl")
-    
+
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
@@ -41,7 +41,7 @@ def calculate_metrics(
         f"{prefix}f1_score": f1_score(y_test, predictions, zero_division=np.nan),
         f"{prefix}roc_auc": roc_auc_score(y_test, predictions),
     }
-    
+
     if figures:
         con_matrix_fig = ConfusionMatrixDisplay.from_predictions(y_test, predictions).figure_
         roc_fig = RocCurveDisplay.from_predictions(y_test, predictions).figure_

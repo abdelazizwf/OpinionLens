@@ -17,25 +17,25 @@ text_pool = [
 
 class SimulatedUsers(HttpUser):
     wait_time = between(1, 5)
-    
+
     @task
     def predict(self):
         text = random.choice(text_pool)
         url = "/api/v1/predict"
-        
+
         if random.random() > 0.5:
             url += f"?text={text}"
             self.client.get(url, name="/api/v1/predict")
         else:
             self.client.post(url, json={"text": text})
-    
+
     @task
     def batch_predict(self):
         k = random.randint(2, len(text_pool))
         batch = random.sample(text_pool, k=k)
         url = "/api/v1/batch_predict"
         self.client.post(url, json=batch)
-    
+
     def on_start(self):
         self.client.post("/api/v1/_/models", json={
             "model_uri": "basic_model/1",
