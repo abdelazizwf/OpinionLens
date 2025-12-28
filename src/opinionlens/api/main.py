@@ -1,15 +1,12 @@
-import os
 import time
 from contextlib import asynccontextmanager
 from typing import Annotated
 
-from fastapi import Body, FastAPI, HTTPException
+from fastapi import BackgroundTasks, Body, FastAPI, HTTPException
 from fastapi.responses import Response
 from prometheus_client import (
     CONTENT_TYPE_LATEST,
     generate_latest,
-    make_asgi_app,
-    multiprocess,
 )
 from prometheus_fastapi_instrumentator import Instrumentator
 
@@ -38,12 +35,6 @@ app.include_router(private.router)
 
 instrumentator = instrumentator.instrument(app)
 
-# multiprocess.MultiProcessCollector(instruments.inference_registry)
-# if os.environ.get("PROMETHEUS_MULTIPROC_DIR"):
-#     inference_metrics_app =  make_asgi_app(registry=instruments.inference_registry)
-
-# app.mount("/api/v1/metrics", inference_metrics_app)
-
 
 @app.get("/api/v1")
 async def root():
@@ -56,7 +47,7 @@ async def about():
 
 
 @app.get("/api/v1/predict")
-async def predict(text: str):
+async def predict(text: str, background_tasks: BackgroundTasks):
     """Predict the sentiment of a single text."""
     try:
         model = model_manager.get_default_model()
@@ -67,32 +58,39 @@ async def predict(text: str):
     
     except (ModelNotAvailableError, OperationalError) as e:
         raise HTTPException(status_code=503, detail=f"{type(e).__name__}: {e.message}")
-        
-    instruments.INPUT_TEXT_LENGTH_CHARS.labels("/predict").observe(len(text))
-    
-    instruments.MODEL_INFERENCE_TIME_SECONDS.labels(
-        "/predict",
-        model.__class__.__name__,
-    ).observe(end_time - start_time)
     
     prediction = "POSITIVE" if prediction == 1 else "NEGATIVE"
+
+    def log_metrics():
+        instruments.INPUT_TEXT_LENGTH_CHARS.labels("/predict").observe(len(text))
     
-    instruments.PREDICTED_SENTIMENT_TOTAL.labels(
-        prediction
-    ).inc()
+        instruments.MODEL_INFERENCE_TIME_SECONDS.labels(
+            "/predict",
+            model.__class__.__name__,
+        ).observe(end_time - start_time)
+                
+        instruments.PREDICTED_SENTIMENT_TOTAL.labels(
+            prediction
+        ).inc()
+    
+    background_tasks.add_task(log_metrics)
     
     return {"prediction": prediction}
 
 
 @app.post("/api/v1/predict")
-async def encrypted_predict(text: Annotated[str, Body(embed=True)]):
+async def encrypted_predict(
+    text: Annotated[str, Body(embed=True)],
+    background_tasks: BackgroundTasks
+):
     """Predict the sentiment of a single text."""
-    return await predict(text)
+    return await predict(text, background_tasks)
 
 
 @app.post("/api/v1/batch_predict")
 async def batch_predict(
     batch: Annotated[list[str], Body()],
+    background_tasks: BackgroundTasks,
 ) -> list[str]:
     """Predict the sentiments of multiple texts."""
     try:
@@ -105,31 +103,34 @@ async def batch_predict(
     except (ModelNotAvailableError, OperationalError) as e:
         raise HTTPException(status_code=503, detail=f"{type(e).__name__}: {e.message}")
     
-    instruments.MODEL_INFERENCE_TIME_SECONDS.labels(
-        "/batch_predict",
-        model.__class__.__name__,
-    ).observe(end_time - start_time)
-    
-    instruments.BATCH_INFERENCE_TIME_PER_ITEM_SECONDS.labels(
-        "/batch_predict",
-        model.__class__.__name__,
-    ).observe((end_time - start_time) / len(batch))
-    
-    instruments.BATCH_SIZE_TEXT.labels(
-        "/batch_predict"
-    ).observe(len(batch))
-    
-    for text in batch:
-        instruments.INPUT_TEXT_LENGTH_CHARS.labels("/batch_predict").observe(len(text))
-    
     response = [
         "POSITIVE" if prediction == 1 else "NEGATIVE" for prediction in predictions
     ]
     
-    for prediction in response:
-        instruments.PREDICTED_SENTIMENT_TOTAL.labels(
-            prediction
-        ).inc()
+    def log_metrics():
+        instruments.MODEL_INFERENCE_TIME_SECONDS.labels(
+            "/batch_predict",
+            model.__class__.__name__,
+        ).observe(end_time - start_time)
+        
+        instruments.BATCH_INFERENCE_TIME_PER_ITEM_SECONDS.labels(
+            "/batch_predict",
+            model.__class__.__name__,
+        ).observe((end_time - start_time) / len(batch))
+        
+        instruments.BATCH_SIZE_TEXT.labels(
+            "/batch_predict"
+        ).observe(len(batch))
+        
+        for text in batch:
+            instruments.INPUT_TEXT_LENGTH_CHARS.labels("/batch_predict").observe(len(text))
+        
+        for prediction in response:
+            instruments.PREDICTED_SENTIMENT_TOTAL.labels(
+                prediction
+            ).inc()
+
+    background_tasks.add_task(log_metrics)
     
     return response
 

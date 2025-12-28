@@ -39,7 +39,7 @@ class SklearnModel(Model):
         self.pyfunc_model = mlflow.pyfunc.load_model(model_path)
         self._logger = get_logger(self.__class__.__name__, level=LOGGING_LEVEL)
     
-    def preprocess_text(self, text: str) -> spmatrix:
+    def preprocess_text(self, batch: list[str]) -> spmatrix:
         """Preprocess the input text.
         
         Args:
@@ -48,10 +48,10 @@ class SklearnModel(Model):
         Returns:
             The text encoding to be used as input to the model.
         """
-        tokenized_text = " ".join(tokenizer(clean_text(text)))
+        tokenized_batch = [" ".join(tokenizer(clean_text(text))) for text in batch]
 
         vectorizer = get_saved_tfidf_vectorizer()
-        vectors = vectorizer.transform(np.array([tokenized_text]))
+        vectors = vectorizer.transform(np.array(tokenized_batch))
         
         self._logger.debug("Preprocessing done.")
         return vectors
@@ -66,7 +66,7 @@ class SklearnModel(Model):
             Either 0 for negative sentiment, or 1 for positive sentiment.
         """
         self._logger.debug(f"Asked to predict {text!r}.")
-        vectors = self.preprocess_text(text)
+        vectors = self.preprocess_text([text])
         prediction = int(self.pyfunc_model.predict(vectors)[0])
         self._logger.debug(f"Prediction result is {prediction!r}.")
         return prediction
@@ -81,5 +81,6 @@ class SklearnModel(Model):
             A list of predictions, with 0 for negative sentiment, and 1 for positive sentiment.
         """
         self._logger.debug(f"Asked to batch predict a list of length {len(batch)!r}.")
-        predictions = [self.predict(text) for text in batch]
+        vectors = self.preprocess_text(batch)
+        predictions = [int(p) for p in self.pyfunc_model.predict(vectors)]
         return predictions
