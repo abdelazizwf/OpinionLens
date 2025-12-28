@@ -682,7 +682,7 @@
             
           },
           "editorMode": "code",
-          "expr": "process_resident_memory_bytes{job=\"api\"}",
+          "expr": "process_resident_memory_bytes{job=\"node\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -785,7 +785,7 @@
             
           },
           "editorMode": "code",
-          "expr": "rate(process_cpu_seconds_total{job=\"api\"}[30s])",
+          "expr": "rate(process_cpu_seconds_total{job=\"node\"}[30s])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
