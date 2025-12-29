@@ -21,7 +21,7 @@ def get_logger(
     logger.addHandler(stream_handler)
 
     if filename is not None:
-        file_handler  = logging.FileHandler(filename, mode="w")
+        file_handler  = logging.FileHandler(filename, mode="a+")
         file_handler.setLevel(level)
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)

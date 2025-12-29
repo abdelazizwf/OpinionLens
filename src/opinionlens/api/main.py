@@ -9,11 +9,13 @@ from prometheus_client import (
     generate_latest,
 )
 from prometheus_fastapi_instrumentator import Instrumentator
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from opinionlens.api import instruments
 from opinionlens.api.exceptions import ModelNotAvailableError, OperationalError
 from opinionlens.api.info import app_info
 from opinionlens.api.managers import model_manager
+from opinionlens.api.middlewares import log_error_responses
 from opinionlens.api.routers import private
 
 instrumentator = Instrumentator()
@@ -30,6 +32,8 @@ app = FastAPI(
     **app_info,
     lifespan=lifespan,
 )
+
+app.add_middleware(BaseHTTPMiddleware, dispatch=log_error_responses)
 
 app.include_router(private.router)
 

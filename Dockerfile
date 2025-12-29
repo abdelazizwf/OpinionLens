@@ -5,7 +5,7 @@ ENV UV_LINK_MODE=copy
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install uv
 
-RUN mkdir /app && mkdir /app/models
+RUN mkdir /app && mkdir /app/models && mkdir /app/logs
 WORKDIR /app
 
 COPY .python-version params.yaml pyproject.toml uv.lock README.md LICENSE ./

@@ -13,7 +13,7 @@ router = APIRouter(
 
 
 @router.post("/models", status_code=201)
-async def fetch_model(
+def fetch_model(
     model_uri: Annotated[str, Body()],
     set_default: Annotated[bool, Body()] = False,
 ):

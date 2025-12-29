@@ -20,3 +20,4 @@ wheels/
 /optuna.sqlite3
 /mlruns
 /.pytest_cache
+/logs
