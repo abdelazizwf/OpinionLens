@@ -3,7 +3,7 @@ services:
     image: postgres:18.1-trixie
     container_name: postgres
     volumes:
-      - /var/lib/postgresql
+      - postgres_data:/var/lib/postgresql
       - ./configs/postgres:/docker-entrypoint-initdb.d
     env_file:
       - .env.build
@@ -35,7 +35,7 @@ services:
     expose:
       - 5000
     volumes:
-      - /mlflow
+      - mlflow_data:/mlflow
     networks:
       - docker-net
     restart: unless-stopped
@@ -133,7 +133,7 @@ services:
     networks:
       - docker-net
     volumes:
-      - grafana_storage:/var/lib/grafana
+      - grafana_data:/var/lib/grafana
       - ./configs/grafana/dashboards:/etc/grafana/provisioning/dashboards/
       - ./configs/grafana/datasources:/etc/grafana/provisioning/datasources/
     labels:
@@ -147,4 +147,6 @@ networks:
 
 volumes:
   prometheus_data: {}
-  grafana_storage: {}
+  postgres_data: {}
+  mlflow_data: {}
+  grafana_data: {}

@@ -3,7 +3,8 @@ from contextlib import asynccontextmanager
 from typing import Annotated
 
 from fastapi import BackgroundTasks, Body, FastAPI, HTTPException
-from fastapi.responses import Response
+from fastapi.responses import RedirectResponse, Response
+from fastapi.staticfiles import StaticFiles
 from prometheus_client import (
     CONTENT_TYPE_LATEST,
     generate_latest,
@@ -37,11 +38,18 @@ app.add_middleware(BaseHTTPMiddleware, dispatch=log_error_responses)
 
 app.include_router(private.router)
 
+app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
+
 instrumentator = instrumentator.instrument(app)
 
 
-@app.get("/api/v1")
+@app.get("/")
 async def root():
+    return RedirectResponse(url="/frontend/index.html")
+
+
+@app.get("/api/v1")
+async def api_root():
     return {"message": "Welcome to OpinionLens!"}
 
 

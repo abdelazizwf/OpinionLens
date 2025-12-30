@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OpinionLens</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --card: #282828;
+      --bg: #282828;
+      --text: #eaeaea;
+      --muted: #a1a1aa;
+      --border: #424141;
+      --primary: #3b82f6;
+    }
+
+    [data-theme="light"] {
+      --bg: #fbf1c7;
+      --card: #f9f5d7;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #cbd5e1;
+      --primary: #2563eb;
+    }
+
+    body {
+      font-family: "Inter", system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 60px auto;
+      padding: 32px;
+      background-color: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .theme-toggle {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      display: flex;
+      padding: 0;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    p.description {
+      margin-top: 16px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      background-color: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 1rem;
+    }
+
+    textarea::placeholder {
+      color: #71717a;
+    }
+
+    button {
+      margin-top: 16px;
+      background-color: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    button:hover:not(:disabled) {
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .result {
+      margin-top: 24px;
+      padding: 16px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+
+    .result.positive {
+      background-color: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+
+    .result.negative {
+      background-color: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .latency {
+      margin-top: 12px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <button id="themeToggle" class="theme-toggle" style="margin: 1%;">🌙</button>
+  </div>
+  <div class="container">
+    <h1>OpinionLens</h1>
+    <p class="description">
+      A production-ready sentiment analysis pipeline leveraging local ML training, DVC data versioning, MLflow model registry, Dockerized services, and Prometheus/Grafana monitoring.
+    </p>
+
+    <textarea id="inputText" placeholder="Type or paste your text here..."></textarea>
+
+    <div>
+    <button id="submitBtn">Analyse</button>
+    <span id="latency" class="latency" style="display: none;"></span>
+    </div>
+    <!-- <div id="latency" class="latency" style="display: none;"></div> -->
+
+    <div id="error" class="error"></div>
+    <div id="result" class="result" style="display: none;"></div>
+  </div>
+
+  <script>
+    const submitBtn = document.getElementById("submitBtn");
+    const inputText = document.getElementById("inputText");
+    const resultDiv = document.getElementById("result");
+    const errorDiv = document.getElementById("error");
+    const themeToggle = document.getElementById("themeToggle");
+    const root = document.documentElement;
+
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    root.setAttribute("data-theme", savedTheme);
+    themeToggle.textContent = savedTheme === "dark" ? "🌙" : "☀️";
+
+    themeToggle.addEventListener("click", () => {
+      const current = root.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+
+      root.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
+      themeToggle.textContent = next === "dark" ? "🌙" : "☀️";
+    });
+
+    inputText.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.key === "Enter") {
+        e.preventDefault();
+        submitBtn.click();
+      }
+    });
+
+    submitBtn.addEventListener("click", async () => {
+      const text = inputText.value.trim();
+
+      errorDiv.textContent = "";
+      resultDiv.style.display = "none";
+
+      if (!text) {
+        errorDiv.textContent = "Please enter some text before submitting.";
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Evaluating...";
+
+      try {
+        const latencyDiv = document.getElementById("latency");
+
+        const startTime = performance.now();
+
+        const response = await fetch("/api/v1/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text })
+        });
+
+        const endTime = performance.now();
+        const latencyMs = Math.round(endTime - startTime);
+
+        const data = await response.json();
+        const prediction = data.prediction;
+
+        resultDiv.className = "result";
+        resultDiv.textContent = prediction;
+
+        if (prediction === "POSITIVE") {
+          resultDiv.classList.add("positive");
+        } else {
+          resultDiv.classList.add("negative");
+        }
+
+        resultDiv.style.display = "block";
+        latencyDiv.textContent = `Latency: ${latencyMs} ms`;
+        latencyDiv.style.display = "block";
+      } catch (err) {
+        errorDiv.textContent = "Failed to evaluate text. Check the API or network.";
+        console.error(err);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Evaluate";
+      }
+    });
+  </script>
+</body>
+</html>

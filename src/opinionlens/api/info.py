@@ -15,7 +15,7 @@ app_info = dict(
     title="OpinionLens",
     description=description,
     summary="AI-powered sentiment analysis with reproducible models and scalable deployment.",
-    version="0.0.2",
+    version="0.0.3",
     contact={
         "name": "Abdelaziz W. Farahat",
         "email": "abdelaziz.w.f@gmail.com",

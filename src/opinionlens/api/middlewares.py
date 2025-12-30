@@ -10,6 +10,9 @@ async def log_error_responses(request: Request, call_next):
     url = request.url.path
     response = await call_next(request)
     if response.status_code >= 400:
+        if response.status_code == 404:
+            return response
+
         response_body = [chunck async for chunck in response.body_iterator]
         response_text = (b"".join(response_body)).decode()
         logger.error(
