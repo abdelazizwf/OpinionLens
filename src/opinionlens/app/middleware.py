@@ -3,7 +3,7 @@ from starlette.concurrency import iterate_in_threadpool
 
 from opinionlens.common.utils import get_logger
 
-logger = get_logger(__name__, filename="logs/api.log")
+logger = get_logger(__name__, filename="logs/app.log")
 
 
 async def log_error_responses(request: Request, call_next):

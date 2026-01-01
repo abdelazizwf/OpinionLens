@@ -4,7 +4,7 @@ A production-ready sentiment analysis pipeline leveraging local ML training, DVC
 
 ## Planned Features
 
-- [ ] Monitoring stack with Prometheus and Grafana
+- [X] Monitoring stack with Prometheus and Grafana
 - [ ] Reverse proxy configuration with Traefik
 - [ ] Training and deploying deep models
 - [ ] Model interpretability
@@ -26,7 +26,7 @@ flowchart TD
 
     A3 -->|Upload Artifact| B1
 
-    subgraph Inference[Inference API Service]
+    subgraph Inference[Inference API & Web Service]
         C1[FastAPI Container]
         C2[Preprocessing Module]
         C3[Load Model from MLflow]

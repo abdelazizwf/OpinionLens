@@ -23,12 +23,12 @@ scrape_configs:
     static_configs:
       - targets: ["postgres-exporter.docker-net:9187"]
 
-  - job_name: api
+  - job_name: app
     metrics_path: /metrics
     static_configs:
-      - targets: ["api.docker-net:80"]
+      - targets: ["app.docker-net:80"]
 
   - job_name: inference
     metrics_path: /api/v1/metrics
     static_configs:
-      - targets: ["api.docker-net:80"]
+      - targets: ["app.docker-net:80"]

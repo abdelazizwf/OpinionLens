@@ -1,64 +1,16 @@
 import time
-from contextlib import asynccontextmanager
 from typing import Annotated
 
-from fastapi import BackgroundTasks, Body, FastAPI, HTTPException
-from fastapi.responses import RedirectResponse, Response
-from fastapi.staticfiles import StaticFiles
-from prometheus_client import (
-    CONTENT_TYPE_LATEST,
-    generate_latest,
-)
-from prometheus_fastapi_instrumentator import Instrumentator
-from starlette.middleware.base import BaseHTTPMiddleware
+from fastapi import APIRouter, BackgroundTasks, Body, HTTPException
 
-from opinionlens.api import instruments
-from opinionlens.api.exceptions import ModelNotAvailableError, OperationalError
-from opinionlens.api.info import app_info
-from opinionlens.api.managers import model_manager
-from opinionlens.api.middlewares import log_error_responses
-from opinionlens.api.routers import private
+from opinionlens.app import instruments
+from opinionlens.app.exceptions import ModelNotAvailableError, OperationalError
+from opinionlens.app.managers import model_manager
 
-instrumentator = Instrumentator()
+router = APIRouter()
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    global instrumentator
-    instrumentator.expose(app)
-    yield
-
-
-app = FastAPI(
-    **app_info,
-    lifespan=lifespan,
-)
-
-app.add_middleware(BaseHTTPMiddleware, dispatch=log_error_responses)
-
-app.include_router(private.router)
-
-app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
-
-instrumentator = instrumentator.instrument(app)
-
-
-@app.get("/")
-async def root():
-    return RedirectResponse(url="/frontend/index.html")
-
-
-@app.get("/api/v1")
-async def api_root():
-    return {"message": "Welcome to OpinionLens!"}
-
-
-@app.get("/api/v1/about")
-async def about():
-    return app_info
-
-
-@app.get("/api/v1/predict")
+@router.get("/predict")
 async def predict(text: str, background_tasks: BackgroundTasks):
     """Predict the sentiment of a single text."""
     try:
@@ -90,7 +42,7 @@ async def predict(text: str, background_tasks: BackgroundTasks):
     return {"prediction": prediction}
 
 
-@app.post("/api/v1/predict")
+@router.post("/predict")
 async def encrypted_predict(
     text: Annotated[str, Body(embed=True)],
     background_tasks: BackgroundTasks
@@ -99,7 +51,7 @@ async def encrypted_predict(
     return await predict(text, background_tasks)
 
 
-@app.post("/api/v1/batch_predict")
+@router.post("/batch_predict")
 async def batch_predict(
     batch: Annotated[list[str], Body()],
     background_tasks: BackgroundTasks,
@@ -145,11 +97,3 @@ async def batch_predict(
     background_tasks.add_task(log_metrics)
 
     return response
-
-
-@app.get("/api/v1/metrics")
-async def inference_metrics():
-    return Response(
-        generate_latest(registry=instruments.inference_registry),
-        media_type=CONTENT_TYPE_LATEST,
-    )

@@ -12,11 +12,11 @@ COPY .python-version params.yaml pyproject.toml uv.lock README.md LICENSE ./
 COPY .env.prod ./.env
 COPY src ./src
 COPY objects ./objects
-COPY frontend ./frontend
+COPY static ./static
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --no-dev
 
 EXPOSE 80
 
-CMD ["uv", "run", "uvicorn", "src.opinionlens.api.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uv", "run", "uvicorn", "src.opinionlens.app.main:app", "--host", "0.0.0.0", "--port", "80"]

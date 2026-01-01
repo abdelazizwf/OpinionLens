@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OpinionLens</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
+
+</head>
+<body>
+  <div class="top-bar">
+    <button id="themeToggle" class="theme-toggle" style="margin: 1%;">🌙</button>
+  </div>
+  <div class="container">
+    <h1>OpinionLens</h1>
+    <p class="description">
+      A production-ready sentiment analysis pipeline leveraging local ML training, DVC data versioning, MLflow model registry, Dockerized services, and Prometheus/Grafana monitoring.
+    </p>
+
+    <textarea id="inputText" placeholder="Type or paste your text here..."></textarea>
+
+    <div>
+    <button id="submitBtn">Evaluate</button>
+    <span id="latency" class="latency" style="display: none;"></span>
+    </div>
+
+    <div id="error" class="error"></div>
+    <div id="result" class="result" style="display: none;"></div>
+  </div>
+
+  <script src="{{ url_for('static', path='/js/script.js') }}"></script>
+</body>
+</html>

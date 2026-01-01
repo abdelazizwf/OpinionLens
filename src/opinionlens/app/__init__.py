@@ -5,7 +5,7 @@ import mlflow
 
 from opinionlens.common.utils import get_logger
 
-logger = get_logger("opinionlens.api")
+logger = get_logger("opinionlens.app")
 
 dotenv.load_dotenv(".env", override=True)
 

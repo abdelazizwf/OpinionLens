@@ -21,11 +21,11 @@ class SimulatedUsers(HttpUser):
     @task
     def predict(self):
         text = random.choice(text_pool)
-        url = "/api/v1/predict"
+        url = "/api/v1/inference/predict"
 
         if random.random() > 0.5:
             url += f"?text={text}"
-            self.client.get(url, name="/api/v1/predict")
+            self.client.get(url, name="/api/v1/inference/predict")
         else:
             self.client.post(url, json={"text": text})
 
@@ -33,11 +33,11 @@ class SimulatedUsers(HttpUser):
     def batch_predict(self):
         k = random.randint(2, len(text_pool))
         batch = random.sample(text_pool, k=k)
-        url = "/api/v1/batch_predict"
+        url = "/api/v1/inference/batch_predict"
         self.client.post(url, json=batch)
 
     def on_start(self):
-        self.client.post("/api/v1/_/models", json={
+        self.client.post("/api/v1/models", json={
             "model_uri": "basic_model/1",
             "set_default": True
         })

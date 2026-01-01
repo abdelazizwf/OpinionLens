@@ -6,8 +6,8 @@ from typing import Any
 
 import mlflow
 
-from opinionlens.api.exceptions import ModelNotAvailableError, OperationalError
-from opinionlens.api.models import Model, SklearnModel
+from opinionlens.app.exceptions import ModelNotAvailableError, OperationalError
+from opinionlens.app.models import Model, SklearnModel
 from opinionlens.common.utils import get_logger
 
 __all__ = ["model_manager"]
@@ -19,7 +19,7 @@ LOGGING_LEVEL = os.environ["LOGGING_LEVEL"]
 class __ModelManager:
     """A class to manage models saved on disk at the backend.
 
-    **DO NOT INSTANTIATE**, use `opinionlens.api.manager.model_manager` instead.
+    **DO NOT INSTANTIATE**, use `opinionlens.app.manager.model_manager` instead.
     """
 
     def __init__(self):

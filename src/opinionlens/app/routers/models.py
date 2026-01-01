@@ -3,16 +3,13 @@ from typing import Annotated
 from fastapi import APIRouter, Body, HTTPException
 from mlflow.exceptions import MlflowException
 
-from opinionlens.api.exceptions import ModelNotAvailableError, OperationalError
-from opinionlens.api.managers import model_manager
+from opinionlens.app.exceptions import ModelNotAvailableError, OperationalError
+from opinionlens.app.managers import model_manager
 
-router = APIRouter(
-    prefix="/api/v1/_",
-    tags=["private"],
-)
+router = APIRouter()
 
 
-@router.post("/models", status_code=201)
+@router.post("/", status_code=201)
 def fetch_model(
     model_uri: Annotated[str, Body()],
     set_default: Annotated[bool, Body()] = False,
@@ -44,14 +41,14 @@ def fetch_model(
     }
 
 
-@router.get("/models")
+@router.get("/")
 async def list_models():
     """List the details of all available models."""
     models = model_manager.get_model_info()
     return models
 
 
-@router.get("/models/{model_id}")
+@router.get("/{model_id}")
 async def list_model(model_id: str):
     """List the details of a given model."""
     try:
@@ -62,7 +59,7 @@ async def list_model(model_id: str):
     return model
 
 
-@router.delete("/models/{model_id}")
+@router.delete("/{model_id}")
 async def delete_model(model_id: str):
     """Remove the given model from the backend."""
     try:
