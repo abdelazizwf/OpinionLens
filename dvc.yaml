@@ -6,10 +6,12 @@ stages:
       - src/opinionlens/preprocessing/clean.py
       - src/opinionlens/preprocessing/tokenize.py
       - data/raw/IMDB Dataset/
+      - data/raw/Amazon Food Reviews/
     params:
       - preprocessing.data_splits
     outs:
       - data/preprocessed/imdb_dataset/
+      - data/preprocessed/amazon_food_reviews/
 
   vectorize_data:
     cmd: mkdir -p ./data/vectorized && uv run vectorize_data

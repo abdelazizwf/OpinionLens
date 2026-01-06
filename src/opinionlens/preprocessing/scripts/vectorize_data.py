@@ -34,10 +34,6 @@ def main():
             test_corpus.extend(text)
             test_scores.extend(scores)
 
-    train_corpus = np.array(train_corpus)
-    val_corpus = np.array(val_corpus)
-    test_corpus = np.array(test_corpus)
-
     vectorizer = get_tfidf_vectorizer(train_corpus, save=True)
 
     train_vectors = vectorizer.transform(train_corpus)
@@ -45,7 +41,7 @@ def main():
     test_vectors = vectorizer.transform(test_corpus)
 
     vectors_path = "data/vectorized/"
-    assert os.path.exists(vectors_path), f"{vectors_path!r} doesn't exist!"
+    os.makedirs(vectors_path, exist_ok=True)
 
     joblib.dump(train_vectors, os.path.join(vectors_path, "train_vectors.pkl"))
     joblib.dump(val_vectors, os.path.join(vectors_path, "val_vectors.pkl"))
