@@ -93,7 +93,7 @@ class BaggingLinearSVCSubject:
     def get_model(cls, params: dict) -> BaggingClassifier:
         return BaggingClassifier(
             **params,
-            estimator=LinearSVC(penalty="l2", C=0.4),
+            estimator=LinearSVC(penalty="l2", C=0.4, class_weight="balanced"),
             random_state=random_state,
         )
 

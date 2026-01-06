@@ -52,8 +52,8 @@ stages:
       nfiles: 6
     - path: src/opinionlens/preprocessing/scripts/vectorize_data.py
       hash: md5
-      md5: 40efecf8d69ea2efb81b8a39182fe66d
-      size: 1795
+      md5: e95728da903fbd5aa99f023fd79d055b
+      size: 1788
     - path: src/opinionlens/preprocessing/vectorize.py
       hash: md5
       md5: 4717282105da1a10c51a0ad454ef6a29

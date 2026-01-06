@@ -5,10 +5,12 @@ import mlflow
 import pandas as pd
 from omegaconf import OmegaConf
 
+from opinionlens.common.utils import get_csv_files
 from opinionlens.preprocessing.vectorize import get_saved_tfidf_vectorizer
 from opinionlens.training.utils import calculate_metrics
 
 conf = OmegaConf.load("params.yaml")
+
 
 def get_balanced_data(df: pd.DataFrame) -> pd.DataFrame:
     score_groups = df.groupby("score")
@@ -46,7 +48,13 @@ def main():
     model_id = sys.argv[1]
     model = mlflow.pyfunc.load_model(f"models:/{model_id}")
 
-    data = pd.read_csv("./data/preprocessed/amazon_food_reviews/test.csv")
+    data_paths = get_csv_files("./data/preprocessed/", prefix="test")
+    data = pd.DataFrame()
+    for path in data_paths:
+        data = pd.concat(
+            [data, pd.read_csv(path)], axis=0
+        )
+
     balanced_data = get_balanced_data(data)
     short_text, long_text = get_short_and_long_text(data)
     less_common, more_common = get_text_with_common_words(data)

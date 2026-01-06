@@ -4,8 +4,8 @@ import joblib
 import numpy as np
 import pandas as pd
 
+from opinionlens.common.utils import get_csv_files
 from opinionlens.preprocessing import get_tfidf_vectorizer
-from opinionlens.preprocessing.utils import get_csv_files
 
 
 def main():

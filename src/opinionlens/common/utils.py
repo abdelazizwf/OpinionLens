@@ -1,5 +1,22 @@
 import logging
+import os
 from datetime import datetime
+
+
+def get_csv_files(path: str, prefix: str | None = None) -> list[str]:
+    assert os.path.exists(path), f"{path!r} doesn't exist!"
+
+    if os.path.isfile(path):
+        return [path]
+
+    paths = []
+    for dirname, _, filenames in os.walk(path):
+        for filename in filenames:
+            if filename.split(".")[-1] == "csv":
+                if not prefix or filename.startswith(prefix):
+                    paths.append(os.path.join(dirname, filename))
+
+    return paths
 
 
 def get_logger(

@@ -8,5 +8,5 @@ preprocessing:
     - 0.1
 
 training:
-  n_trials: 50
+  n_trials: 10
   n_jobs: 6
