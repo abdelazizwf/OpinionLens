@@ -19,8 +19,8 @@ stages:
       size: 272
     - path: src/opinionlens/preprocessing/scripts/preprocess_data.py
       hash: md5
-      md5: ec548dac7c993f2c86911ff9969f9784
-      size: 1748
+      md5: 0cdc5f8576ec7a53aca12261331d6c69
+      size: 1736
     - path: src/opinionlens/preprocessing/tokenize.py
       hash: md5
       md5: fce993fc09013a0e45c08fa7bcc710ec
@@ -47,9 +47,9 @@ stages:
     deps:
     - path: data/preprocessed/
       hash: md5
-      md5: 1c0cb885766997db589b74091cef403b.dir
-      size: 538224260
-      nfiles: 9
+      md5: d4aafacd50abeb3287d15008cc08fd34.dir
+      size: 300513170
+      nfiles: 6
     - path: src/opinionlens/preprocessing/scripts/vectorize_data.py
       hash: md5
       md5: 40efecf8d69ea2efb81b8a39182fe66d
@@ -61,8 +61,8 @@ stages:
     outs:
     - path: data/vectorized/
       hash: md5
-      md5: 9dd017ec417010cbdcb6e8ed1b2310ac.dir
-      size: 825278060
+      md5: c5034cfb7bea5a1d3632a958c1812298.dir
+      size: 453673476
       nfiles: 6
   run_baselines:
     cmd: uv run baselines
@@ -85,6 +85,6 @@ stages:
     deps:
     - path: data/vectorized/
       hash: md5
-      md5: 3361b68dec216f89abf694e3835374f1.dir
-      size: 82048196
+      md5: c5034cfb7bea5a1d3632a958c1812298.dir
+      size: 453673476
       nfiles: 6
