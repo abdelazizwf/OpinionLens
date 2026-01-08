@@ -13,9 +13,10 @@ def main():
     model_info = mlflow.models.get_model_info(model_uri)
 
     remote_uri = os.environ["MLFLOW_REMOTE_URI"]
+    remote_experiment = os.environ["MLFLOW_REMOTE_EXPERIMENT_NAME"]
 
     mlflow.set_tracking_uri(remote_uri)
-    mlflow.set_experiment("Default")
+    mlflow.set_experiment(remote_experiment)
 
     with mlflow.start_run():
         remote_model_info = mlflow.sklearn.log_model(
