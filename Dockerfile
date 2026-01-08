@@ -19,4 +19,4 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 EXPOSE 80
 
-CMD ["uv", "run", "uvicorn", "src.opinionlens.app.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uv", "run", "uvicorn", "src.opinionlens.app.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "80"]

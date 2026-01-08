@@ -19,16 +19,16 @@ scrape_configs:
     static_configs:
       - targets: ["grafana.docker-net:3000"]
 
-  - job_name: postgres
+  - job_name: pg-exporter-mlflow
     static_configs:
-      - targets: ["postgres-exporter.docker-net:9187"]
+      - targets: ["pg-exporter-mlflow.docker-net:9187"]
 
-  - job_name: app
+  - job_name: opinionlens-fastapi
     metrics_path: /metrics
     static_configs:
-      - targets: ["app.docker-net:80"]
+      - targets: ["opinionlens.docker-net:80"]
 
-  - job_name: inference
+  - job_name: opinionlens-inference
     metrics_path: /api/v1/metrics
     static_configs:
-      - targets: ["app.docker-net:80"]
+      - targets: ["opinionlens.docker-net:80"]

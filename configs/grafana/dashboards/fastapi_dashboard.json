@@ -113,7 +113,7 @@
 
           },
           "editorMode": "code",
-          "expr": "increase(http_requests_total{job=\"api\"}[1m])",
+          "expr": "increase(http_requests_total{job=\"opinionlens-fastapi\"}[1m])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -248,7 +248,7 @@
 
           },
           "editorMode": "code",
-          "expr": "sum by (status) (rate(http_requests_total{\"job\"=\"api\"}[1m]))",
+          "expr": "sum by (status) (rate(http_requests_total{\"job\"=\"opinionlens-fastapi\"}[1m]))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -368,7 +368,7 @@
 
           },
           "editorMode": "code",
-          "expr": "sum(rate(http_requests_total{status=\"5xx\",\"job\"=\"api\"}[30s]))",
+          "expr": "sum(rate(http_requests_total{status=\"5xx\",\"job\"=\"opinionlens-fastapi\"}[30s]))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -473,7 +473,7 @@
 
           },
           "editorMode": "code",
-          "expr": "http_request_duration_seconds_sum{job=\"api\",handler!=\"none\"} / http_request_duration_seconds_count{\"job\"=\"api\"}",
+          "expr": "http_request_duration_seconds_sum{job=\"opinionlens-fastapi\",handler!=\"none\"} / http_request_duration_seconds_count{\"job\"=\"opinionlens-fastapi\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -580,7 +580,7 @@
 
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.5, rate(http_request_duration_seconds_bucket{handler!=\"none\",\"job\"=\"api\"}[30s]))",
+          "expr": "histogram_quantile(0.5, rate(http_request_duration_seconds_bucket{handler!=\"none\",\"job\"=\"opinionlens-fastapi\"}[30s]))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -905,7 +905,7 @@
 
           },
           "editorMode": "code",
-          "expr": "increase(http_request_duration_seconds_bucket{le=\"0.1\",\"job\"=\"api\"}[1m]) \n/ ignoring (le) increase(http_request_duration_seconds_count{\"job\"=\"api\"}[1m])",
+          "expr": "increase(http_request_duration_seconds_bucket{le=\"0.1\",\"job\"=\"opinionlens-fastapi\"}[1m]) \n/ ignoring (le) increase(http_request_duration_seconds_count{\"job\"=\"opinionlens-fastapi\"}[1m])",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1010,7 +1010,7 @@
 
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.9, rate(http_request_duration_seconds_bucket{handler!=\"none\",\"job\"=\"api\"}[30s]))",
+          "expr": "histogram_quantile(0.9, rate(http_request_duration_seconds_bucket{handler!=\"none\",\"job\"=\"opinionlens-fastapi\"}[30s]))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1051,7 +1051,7 @@
     ]
   },
   "timezone": "",
-  "title": "FastAPI Dashboard",
+  "title": "OpinionLens FastAPI Dashboard",
   "uid": "_eX4mpl3",
   "version": 5,
   "weekStart": ""

@@ -5,7 +5,7 @@ A production-ready sentiment analysis pipeline leveraging local ML training, DVC
 ## Planned Features
 
 - [X] Monitoring stack with Prometheus and Grafana
-- [ ] Reverse proxy configuration with Traefik
+- [X] Reverse proxy configuration with Traefik
 - [ ] Training and deploying deep models
 - [ ] Model interpretability
 - [ ] More raw data and using sampling techniques for training data

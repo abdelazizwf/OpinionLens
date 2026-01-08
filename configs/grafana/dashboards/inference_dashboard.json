@@ -108,7 +108,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "increase(model_inference_time_seconds_count{\"job\"=\"inference\"}[1m])",
+          "expr": "increase(model_inference_time_seconds_count{\"job\"=\"opinionlens-inference\"}[1m])",
           "instant": false,
           "legendFormat": "{{endpoint}} | {{model_class}}",
           "range": true,
@@ -205,7 +205,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.5, sum by (le, endpoint) (increase(batch_size_text_bucket{\"job\"=\"inference\"}[1m])))",
+          "expr": "histogram_quantile(0.5, sum by (le, endpoint) (increase(batch_size_text_bucket{\"job\"=\"opinionlens-inference\"}[1m])))",
           "instant": false,
           "legendFormat": "p50 {{endpoint}}",
           "range": true,
@@ -217,7 +217,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le, endpoint) (increase(batch_size_text_bucket{\"job\"=\"inference\"}[1m])))",
+          "expr": "histogram_quantile(0.95, sum by (le, endpoint) (increase(batch_size_text_bucket{\"job\"=\"opinionlens-inference\"}[1m])))",
           "hide": false,
           "instant": false,
           "legendFormat": "p95 {{endpoint}}",
@@ -320,7 +320,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "increase(predicted_sentiment_total{\"job\"=\"inference\"}[1m])",
+          "expr": "increase(predicted_sentiment_total{\"job\"=\"opinionlens-inference\"}[1m])",
           "instant": false,
           "legendFormat": "{{label}}",
           "range": true,
@@ -420,7 +420,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le, endpoint, model_class) (increase(batch_inference_time_per_item_seconds_bucket{\"job\"=\"inference\"}[1m])))",
+          "expr": "histogram_quantile(0.95, sum by (le, endpoint, model_class) (increase(batch_inference_time_per_item_seconds_bucket{\"job\"=\"opinionlens-inference\"}[1m])))",
           "instant": false,
           "legendFormat": "{{endpoint}} | {{model_class}}",
           "range": true,
@@ -520,7 +520,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.5, sum by (le, endpoint, model_class) (increase(model_inference_time_seconds_bucket{\"job\"=\"inference\"}[1m])))",
+          "expr": "histogram_quantile(0.5, sum by (le, endpoint, model_class) (increase(model_inference_time_seconds_bucket{\"job\"=\"opinionlens-inference\"}[1m])))",
           "instant": false,
           "legendFormat": "p50 {{endpoint}} | {{model_class}}",
           "range": true,
@@ -532,7 +532,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le, endpoint, model_class) (increase(model_inference_time_seconds_bucket{\"job\"=\"inference\"}[1m])))",
+          "expr": "histogram_quantile(0.95, sum by (le, endpoint, model_class) (increase(model_inference_time_seconds_bucket{\"job\"=\"opinionlens-inference\"}[1m])))",
           "hide": false,
           "instant": false,
           "legendFormat": "p95 {{endpoint}} | {{model_class}}",
@@ -633,7 +633,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.5, sum by (le, endpoint) (increase(input_text_length_chars_bucket{\"job\"=\"inference\"}[1m])))",
+          "expr": "histogram_quantile(0.5, sum by (le, endpoint) (increase(input_text_length_chars_bucket{\"job\"=\"opinionlens-inference\"}[1m])))",
           "instant": false,
           "legendFormat": "p50 {{endpoint}}",
           "range": true,
@@ -645,7 +645,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le, endpoint) (increase(input_text_length_chars_bucket{\"job\"=\"inference\"}[1m])))",
+          "expr": "histogram_quantile(0.95, sum by (le, endpoint) (increase(input_text_length_chars_bucket{\"job\"=\"opinionlens-inference\"}[1m])))",
           "hide": false,
           "instant": false,
           "legendFormat": "p95 {{endpoint}}",
@@ -670,7 +670,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Inference Metrics",
+  "title": "OpinionLens Inference Metrics",
   "uid": "ad57xbj",
   "version": 3
 }

@@ -13,9 +13,9 @@ services:
     expose:
       - 5432
 
-  postgres-exporter:
+  pg-exporter-mlflow:
     image: quay.io/prometheuscommunity/postgres-exporter:latest
-    container_name: postgres-exporter
+    container_name: pg-exporter-mlflow
     expose:
       - 9187
     restart: unless-stopped
@@ -23,6 +23,8 @@ services:
       - docker-net
     env_file:
       - .env.build
+    environment:
+      - DATA_SOURCE_URI=postgres.docker-net:5432/mlflow?sslmode=disable
 
   mlflow:
     image: custom-mlflow
@@ -44,9 +46,9 @@ services:
       - traefik.http.routers.mlflow-http.rule=Host(`mlflow.localhost`)
       - traefik.http.routers.mlflow-http.entrypoints=web
 
-  app:
-    image: app
-    container_name: app
+  opinionlens:
+    image: opinionlens
+    container_name: opinionlens
     build:
       context: .
       dockerfile: Dockerfile
@@ -57,8 +59,8 @@ services:
     restart: unless-stopped
     labels:
       - traefik.enable=true
-      - traefik.http.routers.app-http.rule=Host(`app.localhost`)
-      - traefik.http.routers.app-http.entrypoints=web
+      - traefik.http.routers.opinionlens-http.rule=Host(`opinionlens.localhost`)
+      - traefik.http.routers.opinionlens-http.entrypoints=web
 
   traefik:
     image: traefik:v3.6.5
