@@ -1,0 +1,5 @@
+[mlflow]
+database_uri = sqlite:///basic_auth.db
+admin_username = admin
+admin_password = admin123456789
+default_permission = READ

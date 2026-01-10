@@ -25,3 +25,4 @@ wheels/
 /push_to_server.sh
 /server_files.lst
 /configs/traefik/traefik.prod.yaml
+/configs/mlflow/basic_auth.ini

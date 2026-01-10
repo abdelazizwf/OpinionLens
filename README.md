@@ -61,6 +61,10 @@ flowchart TD
 
 ## Extra Information
 
+### Before Starting
+
+- In `/configs/mlflow/`, rename `basic_auth.ini.example` to `basic_auth.ini` and [configure all options](https://mlflow.org/docs/latest/self-hosting/security/basic-http-auth/#configuration).
+
 ### Data
 
 - [IMDB Review Dataset](https://www.kaggle.com/datasets/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews): Download and unpack at `/data/raw/IMDB Dataset/`.
