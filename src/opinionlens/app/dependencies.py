@@ -14,4 +14,4 @@ async def authenticate_admin(
 ):
     if ADMIN_KEY is not None and key == ADMIN_KEY:
         return
-    raise HTTPException(status_code=401, detail="Header 'X-Key' contained an invalid key.")
+    raise HTTPException(status_code=401, detail="Header 'x-key' contained an invalid key.")

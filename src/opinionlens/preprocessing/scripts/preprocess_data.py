@@ -3,7 +3,8 @@ import os
 import pandas as pd
 from omegaconf import OmegaConf
 
-from opinionlens.preprocessing import clean_text, tokenizer
+from opinionlens.common.utils import get_csv_files
+from opinionlens.preprocessing import clean_text, eval, tokenizer
 from opinionlens.preprocessing.utils import save_preprocessed_data
 
 conf = OmegaConf.load("./params.yaml")
@@ -51,9 +52,33 @@ def preprocess_amazon_food_dataset():
     save_preprocessed_data(data, preprocessed_data_path)
 
 
+def preprocess_eval_data():
+    files = get_csv_files("data/preprocessed/", prefix="test")
+    df = pd.DataFrame()
+    for file in files:
+        df = pd.concat(
+            [df, pd.read_csv(file)], axis=0,
+        )
+
+    eval_data_path = "data/eval_data/"
+    os.makedirs(eval_data_path, exist_ok=True)
+
+    balanced_data = eval.get_balanced_data(df)
+    balanced_data.to_csv(os.path.join(eval_data_path, "balanced_data.csv"))
+
+    short_text, long_text = eval.get_short_and_long_text(df)
+    short_text.to_csv(os.path.join(eval_data_path, "short_text.csv"))
+    long_text.to_csv(os.path.join(eval_data_path, "long_text.csv"))
+
+    less_common, more_common = eval.get_text_with_common_words(df)
+    less_common.to_csv(os.path.join(eval_data_path, "less_common_words.csv"))
+    more_common.to_csv(os.path.join(eval_data_path, "more_common_words.csv"))
+
+
 def main():
     preprocess_imdb_dataset()
     preprocess_amazon_food_dataset()
+    preprocess_eval_data()
 
 
 if __name__ == "__main__":

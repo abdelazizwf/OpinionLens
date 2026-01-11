@@ -10,10 +10,10 @@ from opinionlens.training.utils import (
     load_vectorized_data,
 )
 
+conf = OmegaConf.load("params.yaml")
+
 
 def main():
-    conf = OmegaConf.load("params.yaml")
-
     X_train, X_val, X_test, y_train, y_val, y_test = load_vectorized_data()
 
     subject = BaggingLinearSVCSubject
@@ -64,9 +64,12 @@ def main():
 
         exp_name = mlflow.get_experiment(run.info.experiment_id).name
         model_name = exp_name + "-" + "-".join(run_name.split("-")[:2])
-        mlflow.sklearn.log_model(
+        model_info = mlflow.sklearn.log_model(
             model, name=model_name, input_example=X_test[0],
         )
+
+        conf.models.model_id = model_info.model_id
+        OmegaConf.save(conf, "params.yaml")
 
 
 if __name__ == "__main__":

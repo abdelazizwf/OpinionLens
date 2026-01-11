@@ -25,7 +25,6 @@ class __ModelManager:
     def __init__(self):
         self._models = {}
         self._model_infos = {}
-        self._model_chance = {}
         self._default_model_id = None
         self._logger = get_logger(self.__class__.__name__, level=LOGGING_LEVEL)
 
@@ -131,9 +130,6 @@ class __ModelManager:
         self._logger.info(f"Model {self._default_model_id!r} was requested.")
 
         return self._models[self._default_model_id]
-
-    def get_sampled_model(self):
-        raise NotImplementedError()
 
     def fetch_model(self, model_uri: str) -> tuple[str, str]:
         """Download and load the requested model from the registry.

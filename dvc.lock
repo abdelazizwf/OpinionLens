@@ -1,7 +1,8 @@
 schema: '2.0'
 stages:
   preprocess_data:
-    cmd: mkdir -p ./data/preprocessed && uv run preprocess_data
+    cmd: mkdir -p ./data/preprocessed && mkdir -p ./data/eval_data && uv run
+      preprocess_data
     deps:
     - path: data/raw/Amazon Food Reviews/
       hash: md5
@@ -19,8 +20,8 @@ stages:
       size: 272
     - path: src/opinionlens/preprocessing/scripts/preprocess_data.py
       hash: md5
-      md5: 0cdc5f8576ec7a53aca12261331d6c69
-      size: 1736
+      md5: 63d790a3497c96bcbd9f32a4646bacfe
+      size: 2690
     - path: src/opinionlens/preprocessing/tokenize.py
       hash: md5
       md5: fce993fc09013a0e45c08fa7bcc710ec
@@ -32,16 +33,16 @@ stages:
         - 0.1
         - 0.1
     outs:
-    - path: data/preprocessed/amazon_food_reviews/
+    - path: data/eval_data/
       hash: md5
-      md5: d1a73e15d1e66cacfa9aa627843c411a.dir
-      size: 237711090
-      nfiles: 3
-    - path: data/preprocessed/imdb_dataset/
+      md5: ece7d9d96b286d68359f5d3bec77cff0.dir
+      size: 72615464
+      nfiles: 5
+    - path: data/preprocessed/
       hash: md5
-      md5: 12ed721eab42e5783b722ab5ee851625.dir
-      size: 62802080
-      nfiles: 3
+      md5: d4aafacd50abeb3287d15008cc08fd34.dir
+      size: 300513170
+      nfiles: 6
   vectorize_data:
     cmd: mkdir -p ./data/vectorized && uv run vectorize_data
     deps:
@@ -88,3 +89,11 @@ stages:
       md5: c5034cfb7bea5a1d3632a958c1812298.dir
       size: 453673476
       nfiles: 6
+  run_evals:
+    cmd: uv run evals
+    deps:
+    - path: data/eval_data/
+      hash: md5
+      md5: ece7d9d96b286d68359f5d3bec77cff0.dir
+      size: 72615464
+      nfiles: 5

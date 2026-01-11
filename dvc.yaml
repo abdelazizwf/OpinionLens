@@ -1,6 +1,6 @@
 stages:
   preprocess_data:
-    cmd: mkdir -p ./data/preprocessed && uv run preprocess_data
+    cmd: mkdir -p ./data/preprocessed && mkdir -p ./data/eval_data && uv run preprocess_data
     deps:
       - src/opinionlens/preprocessing/scripts/preprocess_data.py
       - src/opinionlens/preprocessing/clean.py
@@ -10,8 +10,8 @@ stages:
     params:
       - preprocessing.data_splits
     outs:
-      - data/preprocessed/imdb_dataset/
-      - data/preprocessed/amazon_food_reviews/
+      - data/preprocessed/
+      - data/eval_data/
 
   vectorize_data:
     cmd: mkdir -p ./data/vectorized && uv run vectorize_data
@@ -19,6 +19,7 @@ stages:
       - src/opinionlens/preprocessing/scripts/vectorize_data.py
       - src/opinionlens/preprocessing/vectorize.py
       - data/preprocessed/
+      - data/eval_data/
     outs:
       - data/vectorized/
 
@@ -38,4 +39,10 @@ stages:
     cmd: uv run tune_sklearn
     deps:
       - data/vectorized/
+    always_changed: true
+
+  run_evals:
+    cmd: uv run evals
+    deps:
+      - data/eval_data/
     always_changed: true

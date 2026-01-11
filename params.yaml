@@ -10,3 +10,6 @@ preprocessing:
 training:
   n_trials: 10
   n_jobs: 6
+
+models:
+  model_id: "m-c78c562a269f4e699a5a5fe3489e83b9"
