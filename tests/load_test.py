@@ -35,9 +35,3 @@ class SimulatedUsers(HttpUser):
         batch = random.sample(text_pool, k=k)
         url = "/api/v1/inference/batch_predict"
         self.client.post(url, json=batch)
-
-    def on_start(self):
-        self.client.post("/api/v1/models", json={
-            "model_uri": "basic_model/1",
-            "set_default": True
-        })

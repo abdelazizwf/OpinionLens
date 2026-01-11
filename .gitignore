@@ -26,3 +26,4 @@ wheels/
 /server_files.lst
 /configs/traefik/traefik.prod.yaml
 /configs/mlflow/basic_auth.ini
+/configs/prometheus/web.yaml
