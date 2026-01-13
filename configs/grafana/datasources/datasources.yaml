@@ -6,7 +6,3 @@ datasources:
     type: prometheus
     access: proxy
     uid: prometheus
-    basicAuth: true
-    basicAuthUser: admin
-    secureJsonData:
-      basicAuthPassword: $PROMETHEUS_PASSWORD

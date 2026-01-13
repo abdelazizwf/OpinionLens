@@ -2,15 +2,6 @@
 
 A production-ready sentiment analysis pipeline leveraging local ML training, DVC data versioning, MLflow model registry, Dockerized services, and Prometheus/Grafana monitoring.
 
-## Planned Features
-
-- [X] Monitoring stack with Prometheus and Grafana
-- [X] Reverse proxy configuration with Traefik
-- [ ] Training and deploying deep models
-- [ ] Model interpretability
-- [ ] More raw data and using sampling techniques for training data
-- [ ] Extensive testing
-
 ## System Diagram
 
 ```mermaid
@@ -60,10 +51,6 @@ flowchart TD
 ```
 
 ## Extra Information
-
-### Before Starting
-
-- In `/configs/mlflow/`, rename `basic_auth.ini.example` to `basic_auth.ini` and [configure all options](https://mlflow.org/docs/latest/self-hosting/security/basic-http-auth/#configuration).
 
 ### Data
 

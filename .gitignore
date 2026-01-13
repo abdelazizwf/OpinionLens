@@ -21,9 +21,5 @@ wheels/
 /mlruns
 /.pytest_cache
 /logs
-/compose.*
 /push_to_server.sh
 /server_files.lst
-/configs/traefik/traefik.prod.yaml
-/configs/mlflow/basic_auth.ini
-/configs/prometheus/web.yaml

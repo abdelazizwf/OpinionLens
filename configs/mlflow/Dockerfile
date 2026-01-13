@@ -14,7 +14,6 @@ VOLUME [ "/mlflow" ]
 WORKDIR /mlflow
 
 COPY entrypoint.sh /opt/entrypoint.sh
-COPY basic_auth.ini /mlflow/server/auth/basic_auth.ini
 
 RUN chmod +x /opt/entrypoint.sh
 
