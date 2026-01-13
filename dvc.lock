@@ -20,8 +20,8 @@ stages:
       size: 272
     - path: src/opinionlens/preprocessing/scripts/preprocess_data.py
       hash: md5
-      md5: 63d790a3497c96bcbd9f32a4646bacfe
-      size: 2690
+      md5: e46bc4c67536a1517e6f4131c1e31d90
+      size: 2674
     - path: src/opinionlens/preprocessing/tokenize.py
       hash: md5
       md5: fce993fc09013a0e45c08fa7bcc710ec
@@ -46,6 +46,11 @@ stages:
   vectorize_data:
     cmd: mkdir -p ./data/vectorized && uv run vectorize_data
     deps:
+    - path: data/eval_data/
+      hash: md5
+      md5: ece7d9d96b286d68359f5d3bec77cff0.dir
+      size: 72615464
+      nfiles: 5
     - path: data/preprocessed/
       hash: md5
       md5: d4aafacd50abeb3287d15008cc08fd34.dir

@@ -1,3 +1,4 @@
+import hashlib
 import logging
 import os
 from datetime import datetime
@@ -38,7 +39,7 @@ def get_logger(
     logger.addHandler(stream_handler)
 
     if filename is not None:
-        file_handler  = logging.FileHandler(filename, mode="a+")
+        file_handler = logging.FileHandler(filename, mode="a+")
         file_handler.setLevel(level)
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
@@ -51,3 +52,12 @@ def get_timestamp() -> str:
     replacements = str.maketrans("", "", "T:-")
     time = time.translate(replacements)
     return time
+
+
+def hash_file(path: str) -> str:
+    hash_func = hashlib.md5()
+    block_size = 65536
+    with open(path, "rb") as f:
+        while chunk := f.read(block_size):
+            hash_func.update(chunk)
+    return hash_func.hexdigest()

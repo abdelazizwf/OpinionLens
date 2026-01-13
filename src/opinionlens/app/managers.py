@@ -8,11 +8,12 @@ import mlflow
 
 from opinionlens.app.exceptions import ModelNotAvailableError, OperationalError
 from opinionlens.app.models import Model, SklearnModel
-from opinionlens.common.utils import get_logger
+from opinionlens.common.utils import get_logger, hash_file
 
 __all__ = ["model_manager"]
 
 SAVED_MODEL_PATH = os.environ["API_SAVED_MODEL_PATH"]
+SAVED_OBJECTS_PATH = os.environ["API_SAVED_OBJECTS_PATH"]
 LOGGING_LEVEL = os.environ["LOGGING_LEVEL"]
 
 
@@ -111,6 +112,24 @@ class __ModelManager:
 
         return result
 
+    def _check_model_objects(self, model_tags: dict[str, str]):
+        """Check if all model-related objects exist."""
+        objects_tag = model_tags.get("objects")
+
+        if objects_tag is None:
+            return
+
+        objects_list = objects_tag.split("&")
+        for obj in objects_list:
+            file_name, file_hash = obj.split("::")
+            file_path = os.path.join(SAVED_OBJECTS_PATH, file_name)
+            if not (os.path.exists(file_path) and hash_file(file_path) == file_hash):
+                raise OperationalError(
+                    f"Model-related object {file_name} with hash {file_hash} wasn't found. Model fetching aborted."
+                )
+
+            self._logger.debug(f"Model-related object {file_name}::{file_hash} verified.")
+
     def get_default_model(self) -> Model:
         """Return the default model object to make predictions.
 
@@ -148,6 +167,8 @@ class __ModelManager:
         # Propagate Mlflow exception
         model_info = mlflow.models.get_model_info(model_uri)
         model_id = model_info.model_id
+
+        self._check_model_objects(model_info.tags)
 
         if self._model_exists(model_id):
             self._logger.info(f"Model {model_id!r}, requested as {model_uri!r}, is already loaded.")

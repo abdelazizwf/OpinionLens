@@ -2,7 +2,7 @@ import mlflow
 import optuna
 from omegaconf import OmegaConf
 
-from opinionlens.common.utils import get_timestamp
+from opinionlens.common.utils import get_timestamp, hash_file
 from opinionlens.training.sklearn_subjects import BaggingLinearSVCSubject
 from opinionlens.training.utils import (
     calculate_metrics,
@@ -62,10 +62,17 @@ def main():
         mlflow.log_figure(con_matrix_fig, "figures/confusion_matrix.png")
         mlflow.log_figure(roc_fig, "figures/roc.png")
 
+        tags = {
+            "objects": f"vectorizer.pkl::{hash_file("objects/vectorizer.pkl")}"
+        }
+
         exp_name = mlflow.get_experiment(run.info.experiment_id).name
         model_name = exp_name + "-" + "-".join(run_name.split("-")[:2])
         model_info = mlflow.sklearn.log_model(
-            model, name=model_name, input_example=X_test[0],
+            model,
+            name=model_name,
+            input_example=X_test[0],
+            tags=tags,
         )
 
         conf.models.model_id = model_info.model_id
