@@ -37,6 +37,7 @@ class SklearnModel(Model):
         """
         self.model_id = model_id
         self.pyfunc_model = mlflow.pyfunc.load_model(model_path)
+        self._vectorizer = get_saved_tfidf_vectorizer()
         self._logger = get_logger(self.__class__.__name__, level=LOGGING_LEVEL)
 
     def preprocess_text(self, batch: list[str]) -> spmatrix:
@@ -50,8 +51,7 @@ class SklearnModel(Model):
         """
         tokenized_batch = [" ".join(tokenizer(clean_text(text))) for text in batch]
 
-        vectorizer = get_saved_tfidf_vectorizer()
-        vectors = vectorizer.transform(np.array(tokenized_batch))
+        vectors = self._vectorizer.transform(np.array(tokenized_batch))
 
         self._logger.debug("Preprocessing done.")
         return vectors
