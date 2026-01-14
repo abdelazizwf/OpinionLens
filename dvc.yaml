@@ -45,4 +45,6 @@ stages:
     cmd: uv run evals
     deps:
       - data/eval_data/
+    params:
+      - models.model_id
     always_changed: true

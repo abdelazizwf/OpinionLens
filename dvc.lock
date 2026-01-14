@@ -102,3 +102,6 @@ stages:
       md5: ece7d9d96b286d68359f5d3bec77cff0.dir
       size: 72615464
       nfiles: 5
+    params:
+      params.yaml:
+        models.model_id: m-df9ddb7f64c04b28a35ca64e42a731ca
