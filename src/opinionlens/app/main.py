@@ -1,6 +1,8 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -24,9 +26,29 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     **app_info,
     lifespan=lifespan,
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
 )
 
 app.add_middleware(BaseHTTPMiddleware, dispatch=log_error_responses)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["POST", "GET", "PUT", "DELETE"],
+    allow_headers=["Authorization", "Content-Type", "X-Key"],
+)
+
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts = [
+        "abdelazizwf.dev", "*.abdelazizwf.dev",
+        "localhost", "*.localhost",
+        "docker-net", "*.docker-net",
+    ]
+)
 
 app.include_router(
     api.router,
@@ -39,6 +61,11 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 instrumentator = instrumentator.instrument(app)
 
 templates = Jinja2Templates(directory="static/html")
+
+
+@app.get("/health", include_in_schema=False)
+def health():
+    return {"status": "ok"}
 
 
 @app.get("/", response_class=HTMLResponse)
