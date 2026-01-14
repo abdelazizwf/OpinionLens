@@ -15,6 +15,10 @@ services:
       - traefik.http.routers.opinionlens-http.rule=Host(`opinionlens.abdelazizwf.dev`)
       - traefik.http.routers.opinionlens-http.entrypoints=websecure
       - traefik.http.routers.opinionlens-http.tls.certresolver=myresolver
+      - traefik.http.middlewares.opinionlens-ratelimit.ratelimit.average=5
+      - traefik.http.middlewares.opinionlens-ratelimit.ratelimit.period=1s
+      - traefik.http.middlewares.opinionlens-ratelimit.ratelimit.burst=10
+      - traefik.http.routers.opinionlens-http.middlewares=opinionlens-ratelimit@docker
 
 networks:
   docker-net:
