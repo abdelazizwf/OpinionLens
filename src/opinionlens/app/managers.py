@@ -123,12 +123,12 @@ class __ModelManager:
         for obj in objects_list:
             file_name, file_hash = obj.split("::")
             file_path = os.path.join(SAVED_OBJECTS_PATH, file_name)
-            if not (os.path.exists(file_path) and hash_file(file_path) == file_hash):
+            if not os.path.exists(file_path) or hash_file(file_path) != file_hash:
                 raise OperationalError(
                     f"Model-related object {file_name} with hash {file_hash} wasn't found. Model fetching aborted."
                 )
 
-            self._logger.debug(f"Model-related object {file_name}::{file_hash} verified.")
+            self._logger.info(f"Model-related object {file_name}::{file_hash} verified.")
 
     def get_default_model(self) -> Model:
         """Return the default model object to make predictions.

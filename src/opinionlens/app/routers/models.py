@@ -22,6 +22,8 @@ def fetch_model(
         model_path, model_id = model_manager.fetch_model(model_uri)
     except MlflowException as e:
         raise HTTPException(status_code=503, detail=f"Model registry error:\n{e.message}")
+    except OperationalError as e:
+            raise HTTPException(status_code=503, detail=f"{type(e).__name__}: {e.message}")
 
     message = f"Model {model_id!r} saved at {model_path!r}"
 
