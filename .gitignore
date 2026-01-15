@@ -11,6 +11,8 @@ wheels/
 
 .env
 .env.build
+.env.stage
+.env.remote
 .env.prod
 /notebooks
 /models

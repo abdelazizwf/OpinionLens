@@ -6,7 +6,7 @@ preprocessing:
   - 0.1
   - 0.1
 training:
-  n_trials: 40
+  n_trials: 1
   n_jobs: 6
 models:
-  model_id: m-df9ddb7f64c04b28a35ca64e42a731ca
+  model_id: m-5e7b1044db3b4ed8aeab1cea3f39597c

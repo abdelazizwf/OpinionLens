@@ -1,22 +1,25 @@
-import os
 import sys
 
 import mlflow
+
+from opinionlens.common.settings import get_settings
+
+settings = get_settings()
 
 
 def main():
     model_id = sys.argv[1]
     model_name = sys.argv[2]
 
+    mlflow.set_tracking_uri(settings.mlflow.local_tracking_uri)
+    mlflow.set_experiment(settings.mlflow.local_experiment_name)
+
     model_uri = f"models:/{model_id}"
     model = mlflow.sklearn.load_model(model_uri)
     model_info = mlflow.models.get_model_info(model_uri)
 
-    remote_uri = os.environ["MLFLOW_REMOTE_URI"]
-    remote_experiment = os.environ["MLFLOW_REMOTE_EXPERIMENT_NAME"]
-
-    mlflow.set_tracking_uri(remote_uri)
-    mlflow.set_experiment(remote_experiment)
+    mlflow.set_tracking_uri(settings.mlflow.remote_tracking_uri)
+    mlflow.set_experiment(settings.mlflow.remote_experiment_name)
 
     with mlflow.start_run():
         remote_model_info = mlflow.sklearn.log_model(

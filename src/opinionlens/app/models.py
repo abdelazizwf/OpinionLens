@@ -1,14 +1,12 @@
-import os
-
 import mlflow
 import numpy as np
 from scipy.sparse import spmatrix
 
+from opinionlens.common.settings import get_settings
 from opinionlens.common.utils import get_logger
 from opinionlens.preprocessing import clean_text, get_saved_tfidf_vectorizer, tokenizer
 
-SAVED_MODEL_PATH = os.environ["API_SAVED_MODEL_PATH"]
-LOGGING_LEVEL = os.environ["LOGGING_LEVEL"]
+settings = get_settings()
 
 
 class Model:
@@ -38,7 +36,7 @@ class SklearnModel(Model):
         self.model_id = model_id
         self.pyfunc_model = mlflow.pyfunc.load_model(model_path)
         self._vectorizer = get_saved_tfidf_vectorizer()
-        self._logger = get_logger(self.__class__.__name__, level=LOGGING_LEVEL)
+        self._logger = get_logger(self.__class__.__name__, level=settings.api.logging_level)
 
     def preprocess_text(self, batch: list[str]) -> spmatrix:
         """Preprocess the input text.

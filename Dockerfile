@@ -8,8 +8,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 RUN mkdir /app && mkdir /app/models && mkdir /app/logs
 WORKDIR /app
 
-COPY .python-version params.yaml pyproject.toml uv.lock README.md LICENSE ./
-COPY .env.prod ./.env
+COPY .python-version params.yaml pyproject.toml uv.lock README.md LICENSE .env ./
 COPY src ./src
 COPY objects ./objects
 COPY static ./static

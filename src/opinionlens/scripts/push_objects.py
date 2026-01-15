@@ -3,6 +3,10 @@ import sys
 
 import httpx
 
+from opinionlens.common.settings import get_settings
+
+settings = get_settings()
+
 
 def main():
     files = sys.argv[1:]
@@ -12,11 +16,11 @@ def main():
 
         f = {'file': open(file, 'rb')}
 
-        url = os.environ["API_SAVED_OBJECTS_URL"]
+        url = settings.api.object_upload_url
         resp = httpx.post(
             url=url,
             files=f,
-            headers={"X-key": os.environ["ADMIN_API_KEY"]},
+            headers={"X-key": settings.api.admin_key},
         )
         print(resp.json())
 

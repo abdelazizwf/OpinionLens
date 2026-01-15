@@ -7,11 +7,12 @@ from mlflow.exceptions import MlflowException
 
 from opinionlens.app.exceptions import ModelNotAvailableError, OperationalError
 from opinionlens.app.managers import model_manager
+from opinionlens.common.settings import get_settings
 from opinionlens.common.utils import hash_file
 
-router = APIRouter()
+settings = get_settings()
 
-OBJECTS_PATH = os.environ["API_SAVED_OBJECTS_PATH"]
+router = APIRouter()
 
 
 @router.post("/", status_code=201)
@@ -82,7 +83,7 @@ async def delete_model(model_id: str):
 @router.post("/objects")
 def upload_model_related_object(file: UploadFile = File(...)):
     try:
-        path = os.path.join(OBJECTS_PATH, file.filename)
+        path = os.path.join(settings.api.saved_objects_path, file.filename)
 
         if os.path.exists(path):
             raise HTTPException(
@@ -102,7 +103,7 @@ def upload_model_related_object(file: UploadFile = File(...)):
 
 @router.delete("/objects")
 async def delete_model_related_object(filename: str):
-    path = os.path.join(OBJECTS_PATH, filename)
+    path = os.path.join(settings.api.saved_objects_path, filename)
 
     if not os.path.exists(path):
         raise HTTPException(status_code=404, detail=f"Object {filename} doesn't exist.")
@@ -114,10 +115,10 @@ async def delete_model_related_object(filename: str):
 
 @router.get("/objects")
 async def list_objects():
-    _, _, files = next(os.walk(OBJECTS_PATH))
+    _, _, files = next(os.walk(settings.api.saved_objects_path))
     results = []
     for file in files:
-        path = os.path.join(OBJECTS_PATH, file)
+        path = os.path.join(settings.api.saved_objects_path, file)
 
         results.append({
             "filename": file,

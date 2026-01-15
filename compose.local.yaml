@@ -52,6 +52,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      - ENV=local
+      - MLFLOW__REMOTE_TRACKING_URI=http://mlflow.docker-net:5000
+      - API__SAVED_MODEL_PATH=/app/models
+      - API__SAVED_OBJECTS_PATH=/app/objects
     expose:
       - 80
     networks:

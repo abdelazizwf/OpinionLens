@@ -8,13 +8,12 @@ import mlflow
 
 from opinionlens.app.exceptions import ModelNotAvailableError, OperationalError
 from opinionlens.app.models import Model, SklearnModel
+from opinionlens.common.settings import get_settings
 from opinionlens.common.utils import get_logger, hash_file
 
-__all__ = ["model_manager"]
+settings = get_settings()
 
-SAVED_MODEL_PATH = os.environ["API_SAVED_MODEL_PATH"]
-SAVED_OBJECTS_PATH = os.environ["API_SAVED_OBJECTS_PATH"]
-LOGGING_LEVEL = os.environ["LOGGING_LEVEL"]
+__all__ = ["model_manager"]
 
 
 class __ModelManager:
@@ -27,7 +26,7 @@ class __ModelManager:
         self._models = {}
         self._model_infos = {}
         self._default_model_id = None
-        self._logger = get_logger(self.__class__.__name__, level=LOGGING_LEVEL)
+        self._logger = get_logger(self.__class__.__name__, level=settings.api.logging_level)
 
         for model_id in set(self._list_model_path_dirs()):
             self.fetch_model("models:/" + model_id)
@@ -37,7 +36,7 @@ class __ModelManager:
 
     def _get_model_path(self, model_id: str) -> str:
         """Get the path of the model directory."""
-        return os.path.join(SAVED_MODEL_PATH, model_id)
+        return os.path.join(settings.api.saved_model_path, model_id)
 
     def _download_model(self, model_uri: str, model_id: str) -> str:
         """Download the model from the registry."""
@@ -60,7 +59,7 @@ class __ModelManager:
 
     def _list_model_path_dirs(self) -> list[str]:
         """List all available models on disk."""
-        _, dirs, _ = next(iter(os.walk(SAVED_MODEL_PATH)))
+        _, dirs, _ = next(iter(os.walk(settings.api.saved_model_path)))
         return dirs
 
     def _model_exists(self, model_id: str) -> bool:
@@ -122,7 +121,7 @@ class __ModelManager:
         objects_list = objects_tag.split("&")
         for obj in objects_list:
             file_name, file_hash = obj.split("::")
-            file_path = os.path.join(SAVED_OBJECTS_PATH, file_name)
+            file_path = os.path.join(settings.api.saved_objects_path, file_name)
             if not os.path.exists(file_path) or hash_file(file_path) != file_hash:
                 raise OperationalError(
                     f"Model-related object {file_name} with hash {file_hash} wasn't found. Model fetching aborted."

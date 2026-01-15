@@ -70,6 +70,10 @@ stages:
       md5: c5034cfb7bea5a1d3632a958c1812298.dir
       size: 453673476
       nfiles: 6
+    - path: objects/vectorizer.pkl
+      hash: md5
+      md5: 73e5c23533bc5ab5f918c33e9858f00b
+      size: 4050686
   run_baselines:
     cmd: uv run baselines
     deps:
