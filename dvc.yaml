@@ -22,6 +22,7 @@ stages:
       - data/eval_data/
     outs:
       - data/vectorized/
+      - objects/vectorizer.pkl
 
   run_baselines:
     cmd: uv run baselines

@@ -1,12 +1,17 @@
+import os
+import shutil
 from typing import Annotated
 
-from fastapi import APIRouter, Body, HTTPException
+from fastapi import APIRouter, Body, File, HTTPException, UploadFile
 from mlflow.exceptions import MlflowException
 
 from opinionlens.app.exceptions import ModelNotAvailableError, OperationalError
 from opinionlens.app.managers import model_manager
+from opinionlens.common.utils import hash_file
 
 router = APIRouter()
+
+OBJECTS_PATH = os.environ["API_SAVED_OBJECTS_PATH"]
 
 
 @router.post("/", status_code=201)
@@ -50,7 +55,7 @@ async def list_models():
     return models
 
 
-@router.get("/{model_id}")
+@router.get("/")
 async def list_model(model_id: str):
     """List the details of a given model."""
     try:
@@ -61,7 +66,7 @@ async def list_model(model_id: str):
     return model
 
 
-@router.delete("/{model_id}")
+@router.delete("/")
 async def delete_model(model_id: str):
     """Remove the given model from the backend."""
     try:
@@ -72,3 +77,52 @@ async def delete_model(model_id: str):
         raise HTTPException(status_code=503, detail=f"{type(e).__name__}: {e.message}")
 
     return {"message": f"Model {model_id!r} was deleted successfully."}
+
+
+@router.post("/objects")
+def upload_model_related_object(file: UploadFile = File(...)):
+    try:
+        path = os.path.join(OBJECTS_PATH, file.filename)
+
+        if os.path.exists(path):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Object {file.filename} already exists. Consider deleting it first."
+            )
+
+        with open(path, 'wb') as f:
+            shutil.copyfileobj(file.file, f, length=1024 * 1024 * 4)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error during upload: {e}")
+    finally:
+        file.file.close()
+
+    return {"message": f"Successfully uploaded {path}"}
+
+
+@router.delete("/objects")
+async def delete_model_related_object(filename: str):
+    path = os.path.join(OBJECTS_PATH, filename)
+
+    if not os.path.exists(path):
+        raise HTTPException(status_code=404, detail=f"Object {filename} doesn't exist.")
+
+    os.remove(path)
+
+    return {"message": f"Successfully deleted object {path}"}
+
+
+@router.get("/objects")
+async def list_objects():
+    _, _, files = next(os.walk(OBJECTS_PATH))
+    results = []
+    for file in files:
+        path = os.path.join(OBJECTS_PATH, file)
+
+        results.append({
+            "filename": file,
+            "size": f"{round(os.path.getsize(path) / (1024 * 1024), 3)} MB",
+            "hash": hash_file(path),
+        })
+
+    return results
