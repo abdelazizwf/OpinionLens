@@ -1,0 +1,6 @@
+outs:
+- md5: 45c78dbdd1e1c529c4f757e9058fbd92.dir
+  size: 3421431
+  nfiles: 1
+  hash: md5
+  path: Airline Tweets

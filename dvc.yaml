@@ -5,8 +5,8 @@ stages:
       - src/opinionlens/preprocessing/scripts/preprocess_data.py
       - src/opinionlens/preprocessing/clean.py
       - src/opinionlens/preprocessing/tokenize.py
-      - data/raw/IMDB Dataset/
-      - data/raw/Amazon Food Reviews/
+      - src/opinionlens/preprocessing/eval.py
+      - data/raw/
     params:
       - preprocessing.data_splits
     outs:

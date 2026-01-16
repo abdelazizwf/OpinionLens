@@ -52,6 +52,28 @@ def preprocess_amazon_food_dataset():
     save_preprocessed_data(data, preprocessed_data_path)
 
 
+def preprocess_airline_tweets():
+    raw_data_path = "data/raw/Airline Tweets/Tweets.csv"
+    assert os.path.exists(raw_data_path), f"{raw_data_path!r} doesn't exist!"
+
+    data = pd.read_csv(raw_data_path)
+
+    # Drop neutral tweets
+    data = data.loc[data["airline_sentiment"] != "neutral"]
+
+    data["score"] = data["airline_sentiment"].map(
+        {"positive": 1, "negative": 0}
+    )
+
+    data["text"] = data["text"].apply(tokenize_text)
+    data = data[["text", "score"]].sample(
+        frac=1, random_state=conf.base.random_seed
+    ).reset_index(drop=True)
+
+    preprocessed_data_path= "data/preprocessed/airline_tweets/"
+    save_preprocessed_data(data, preprocessed_data_path)
+
+
 def preprocess_eval_data():
     files = get_csv_files("data/preprocessed/", prefix="test")
     df = pd.DataFrame()
@@ -78,6 +100,7 @@ def preprocess_eval_data():
 def main():
     preprocess_imdb_dataset()
     preprocess_amazon_food_dataset()
+    preprocess_airline_tweets()
     preprocess_eval_data()
 
 

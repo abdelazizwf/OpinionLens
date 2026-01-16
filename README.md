@@ -56,3 +56,4 @@ flowchart TD
 
 - [IMDB Review Dataset](https://www.kaggle.com/datasets/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews): Download and unpack at `/data/raw/IMDB Dataset/`.
 - [Amazon Food Reviews Dataset](https://www.kaggle.com/datasets/snap/amazon-fine-food-reviews): Download and unpack at `/data/raw/Amazon Food Reviews/`.
+- [Airline Tweets Sentiment](https://www.kaggle.com/datasets/crowdflower/twitter-airline-sentiment): Download and unpack at `/data/raw/Airline Tweets/`.

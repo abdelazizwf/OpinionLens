@@ -15,7 +15,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class MLflowSettings(BaseModel):
     """Override with environment variables prefixed by `MLFLOW__`. Ex: `local_key` -> `MLFLOW__LOCAL_KEY`."""
     local_experiment_name: str = Field(
-        "imdb_amazon_data",
+        "imdb_amazon_airtweets_data",
         description="The local active MLflow experiment",
     )
     local_tracking_uri: HttpUrl = Field(
@@ -85,3 +85,5 @@ def get_settings():
             return Settings(_env_file=".env.stage")
         case "prod":
             return Settings(_env_file=".env.prod")
+        case _:
+            return Settings()
