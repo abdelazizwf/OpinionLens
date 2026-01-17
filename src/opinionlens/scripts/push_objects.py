@@ -16,11 +16,16 @@ def main():
 
         f = {'file': open(file, 'rb')}
 
+        if type(settings.api.admin_key) is not str:
+            key = settings.api.admin_key.get_secret_value()
+        else:
+            key = settings.api.admin_key
+
         url = settings.api.object_upload_url
         resp = httpx.post(
             url=url,
             files=f,
-            headers={"X-key": settings.api.admin_key},
+            headers={"X-key": key},
         )
         print(resp.json())
 

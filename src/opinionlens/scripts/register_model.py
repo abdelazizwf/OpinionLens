@@ -1,4 +1,6 @@
+import os
 import sys
+from getpass import getpass
 
 import mlflow
 
@@ -18,6 +20,9 @@ def main():
     model = mlflow.sklearn.load_model(model_uri)
     model_info = mlflow.models.get_model_info(model_uri)
 
+    remote_password = getpass("Remote MLflow Password: ")
+    os.environ["MLFLOW_TRACKING_PASSWORD"] = remote_password
+
     mlflow.set_tracking_uri(settings.mlflow.remote_tracking_uri)
     mlflow.set_experiment(settings.mlflow.remote_experiment_name)
 
@@ -32,13 +37,13 @@ def main():
             tags=model_info.tags,
         )
 
-    print(f"Remote model id: {remote_model_info.model_id}")
+    print(f"Remote model ID: {remote_model_info.model_id}")
     print(f"Remote model name: {remote_model_info.name}")
-    print(f"Remote model version: {remote_model_info.registered_model_version}")
+    print(f"Remote model registration version: {remote_model_info.registered_model_version}")
 
     if objs := model_info.tags.get("objects"):
         objs = objs.split("&")
-        print("Don't forget to upload model-related objects:")
+        print("> Don't forget to upload the following model-related objects:")
         for obj in objs:
             print(f"\t{obj}")
 
