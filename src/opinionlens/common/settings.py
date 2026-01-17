@@ -40,7 +40,7 @@ class MLflowSettings(BaseModel):
 class APISettings(BaseModel):
     """Override with environment variables prefixed by `API__`. Ex: `local_key` -> `API__LOCAL_KEY`."""
     object_upload_url: HttpUrl = Field(
-        "http://localhost:8000/api/v1/models/opjects",
+        "http://localhost:8000/api/v1/models/objects",
         description="The url for uploading model-related objects",
     )
     saved_model_path: DirectoryPath = Field(

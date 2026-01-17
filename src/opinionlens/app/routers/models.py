@@ -1,14 +1,11 @@
-import os
-import shutil
 from typing import Annotated
 
 from fastapi import APIRouter, Body, File, HTTPException, UploadFile
 from mlflow.exceptions import MlflowException
 
 from opinionlens.app.exceptions import ModelNotAvailableError, OperationalError
-from opinionlens.app.managers import model_manager
+from opinionlens.app.managers import model_manager, object_manager
 from opinionlens.common.settings import get_settings
-from opinionlens.common.utils import hash_file
 
 settings = get_settings()
 
@@ -83,47 +80,31 @@ async def delete_model(model_id: str):
 @router.post("/objects")
 def upload_model_related_object(file: UploadFile = File(...)):
     try:
-        path = os.path.join(settings.api.saved_objects_path, file.filename)
+        object_manager.add_object(file)
 
-        if os.path.exists(path):
+    except OperationalError:
             raise HTTPException(
                 status_code=400,
                 detail=f"Object {file.filename} already exists. Consider deleting it first."
             )
-
-        with open(path, 'wb') as f:
-            shutil.copyfileobj(file.file, f, length=1024 * 1024 * 4)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error during upload: {e}")
     finally:
         file.file.close()
 
-    return {"message": f"Successfully uploaded {path}"}
+    return {"message": f"Successfully uploaded {file.filename!r}"}
 
 
 @router.delete("/objects")
 async def delete_model_related_object(filename: str):
-    path = os.path.join(settings.api.saved_objects_path, filename)
+    try:
+        object_manager.delete_object(filename)
+    except OperationalError as e:
+        raise HTTPException(status_code=404, detail=e.message)
 
-    if not os.path.exists(path):
-        raise HTTPException(status_code=404, detail=f"Object {filename} doesn't exist.")
-
-    os.remove(path)
-
-    return {"message": f"Successfully deleted object {path}"}
+    return {"message": f"Successfully deleted object {filename!r}"}
 
 
 @router.get("/objects")
 async def list_objects():
-    _, _, files = next(os.walk(settings.api.saved_objects_path))
-    results = []
-    for file in files:
-        path = os.path.join(settings.api.saved_objects_path, file)
-
-        results.append({
-            "filename": file,
-            "size": f"{round(os.path.getsize(path) / (1024 * 1024), 3)} MB",
-            "hash": hash_file(path),
-        })
-
-    return results
+    return object_manager.get_objects()

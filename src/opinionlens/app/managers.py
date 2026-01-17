@@ -13,7 +13,7 @@ from opinionlens.common.utils import get_logger, hash_file
 
 settings = get_settings()
 
-__all__ = ["model_manager"]
+__all__ = ["model_manager", "object_manager"]
 
 
 class __ModelManager:
@@ -249,4 +249,70 @@ class __ModelManager:
         self._logger.info(f"Model {model_id!r} set as default.")
 
 
+class __ObjectManager:
+
+    def __init__(self):
+        self._logger = get_logger(self.__class__.__name__, level=settings.api.logging_level)
+
+        self._objects = {}
+
+        self._read_objects_from_disk()
+
+    def _get_file_path(self, filename):
+        return os.path.join(settings.api.saved_objects_path, filename)
+
+    def _read_objects_from_disk(self):
+        _, _, files = next(os.walk(settings.api.saved_objects_path))
+        for file in files:
+            self._objects[file] = hash_file(self._get_file_path(file))
+        self._logger.debug(f"Read {len(files)} objects from disk.")
+
+    def _object_exists(self, filename):
+        return filename in self._objects.keys()
+
+    def _recieve_file(self, file):
+        try:
+            with open(self._get_file_path(file.filename), 'wb') as f:
+                shutil.copyfileobj(file.file, f, length=1024 * 1024 * 4)
+        except Exception as e:
+            raise e
+        finally:
+            file.file.close()
+
+    def get_objects(self):
+        results = []
+
+        for filename, hash in self._objects.items():
+            file_path = self._get_file_path(filename)
+            results.append({
+                "filename": filename,
+                "size": f"{round(os.path.getsize(file_path) / (1024 * 1024), 3)} MB",
+                "hash": hash,
+            })
+
+        return results
+
+    def delete_object(self, filename):
+        if not self._object_exists(filename):
+            raise OperationalError(message=f"Object {filename!r} doesn't exist.")
+
+        path = self._get_file_path(filename)
+        os.remove(path)
+
+        del self._objects[filename]
+
+    def add_object(self, file):
+        filename = file.filename
+
+        if self._object_exists(filename):
+            raise OperationalError(f"Object {filename!r} exists.")
+
+        self._recieve_file(file)
+
+        self._objects[filename] = hash_file(
+            self._get_file_path(filename)
+        )
+
+
 model_manager = __ModelManager()
+object_manager = __ObjectManager()
