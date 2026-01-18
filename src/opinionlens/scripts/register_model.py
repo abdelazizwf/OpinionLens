@@ -41,12 +41,6 @@ def main():
     print(f"Remote model name: {remote_model_info.name}")
     print(f"Remote model registration version: {remote_model_info.registered_model_version}")
 
-    if objs := model_info.tags.get("objects"):
-        objs = objs.split("&")
-        print("> Don't forget to upload the following model-related objects:")
-        for obj in objs:
-            print(f"\t{obj}")
-
 
 if __name__ == "__main__":
     main()

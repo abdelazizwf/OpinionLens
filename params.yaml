@@ -9,4 +9,4 @@ training:
   n_trials: 1
   n_jobs: 6
 models:
-  model_id: m-5e7b1044db3b4ed8aeab1cea3f39597c
+  model_id: m-6fa73c76c52546cb96b4e8230931c176

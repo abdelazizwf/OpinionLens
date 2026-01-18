@@ -10,7 +10,6 @@ WORKDIR /app
 
 COPY .python-version params.yaml pyproject.toml uv.lock README.md LICENSE .env ./
 COPY src ./src
-COPY objects ./objects
 COPY static ./static
 
 RUN --mount=type=cache,target=/root/.cache/uv \

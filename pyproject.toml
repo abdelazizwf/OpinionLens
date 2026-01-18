@@ -38,7 +38,6 @@ tune_sklearn = "opinionlens.training.tune_sklearn:main"
 evals = "opinionlens.training.evals:main"
 
 register_model = "opinionlens.scripts.register_model:main"
-push_objects = "opinionlens.scripts.push_objects:main"
 
 [build-system]
 requires = ["uv_build>=0.9.17,<0.10.0"]

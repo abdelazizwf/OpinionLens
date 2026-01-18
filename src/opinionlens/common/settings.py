@@ -39,10 +39,6 @@ class MLflowSettings(BaseModel):
 
 class APISettings(BaseModel):
     """Override with environment variables prefixed by `API__`. Ex: `local_key` -> `API__LOCAL_KEY`."""
-    object_upload_url: HttpUrl = Field(
-        "http://localhost:8000/api/v1/models/objects",
-        description="The url for uploading model-related objects",
-    )
     saved_model_path: DirectoryPath = Field(
         "./models",
         description="The path to the models fetched by the API from the model registry",
@@ -55,11 +51,6 @@ class APISettings(BaseModel):
         SecretStr("admin"),
         description="The authentication key for API admin operations",
     )
-
-    @field_validator('object_upload_url')
-    @classmethod
-    def strip_trailing_slash(cls, v: HttpUrl) -> str:
-        return str(v).rstrip('/')
 
 
 class Settings(BaseSettings):
