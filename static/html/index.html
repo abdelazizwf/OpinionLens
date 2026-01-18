@@ -17,9 +17,33 @@
 
 </head>
 <body>
-  <div class="top-bar">
-    <button id="themeToggle" class="theme-toggle" style="margin: 1%;">🌙</button>
-  </div>
+  <nav class="navbar">
+    <div class="nav-left">
+      <a href="/" class="logo-link">
+        <img src="{{ url_for('static', path='/images/favicon.png') }}" alt="Project logo" class="nav-logo" />
+      </a>
+    </div>
+
+    <div class="nav-center">
+      <a href="/" class="nav-link active">Home</a>
+      <a href="/admin" class="nav-link">Admin</a>
+      <a
+        href="https://github.com/your-username/your-repo"
+        class="nav-link"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        GitHub
+      </a>
+    </div>
+
+    <div class="nav-right">
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+        🌙
+      </button>
+    </div>
+  </nav>
+
   <div class="container">
     <h1>OpinionLens</h1>
     <p class="description">

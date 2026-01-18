@@ -20,7 +20,7 @@ def main():
     model = mlflow.sklearn.load_model(model_uri)
     model_info = mlflow.models.get_model_info(model_uri)
 
-    remote_password = getpass("Remote MLflow Password: ")
+    remote_password = getpass("\n!! Remote MLflow Password (if no password press Enter): ")
     os.environ["MLFLOW_TRACKING_PASSWORD"] = remote_password
 
     mlflow.set_tracking_uri(settings.mlflow.remote_tracking_uri)
@@ -29,17 +29,21 @@ def main():
     with mlflow.start_run():
         remote_model_info = mlflow.sklearn.log_model(
             model,
-            registered_model_name=model_name,
             # signature=model_info.signature,
             params=model_info.params,
             metadata=model_info.metadata,
             name=model_info.name,
             tags=model_info.tags,
         )
+        model_version = mlflow.register_model(
+            model_uri=remote_model_info.model_uri,
+            name=model_name,
+            tags={"experiment": settings.mlflow.remote_experiment_name}
+        )
 
-    print(f"Remote model ID: {remote_model_info.model_id}")
-    print(f"Remote model name: {remote_model_info.name}")
-    print(f"Remote model registration version: {remote_model_info.registered_model_version}")
+    print(f"\nRemote model ID: {remote_model_info.model_id}")
+    print(f"Remote model registered name: {model_version.name}")
+    print(f"Remote model registered version: {model_version.version}\n")
 
 
 if __name__ == "__main__":
