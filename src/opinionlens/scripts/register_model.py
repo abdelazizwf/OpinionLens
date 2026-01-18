@@ -30,7 +30,7 @@ def main():
         remote_model_info = mlflow.sklearn.log_model(
             model,
             registered_model_name=model_name,
-            signature=model_info.signature,
+            # signature=model_info.signature,
             params=model_info.params,
             metadata=model_info.metadata,
             name=model_info.name,

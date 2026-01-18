@@ -6,7 +6,6 @@ import pandas as pd
 from omegaconf import OmegaConf
 
 from opinionlens.common.utils import get_csv_files
-from opinionlens.preprocessing.vectorize import get_saved_tfidf_vectorizer
 from opinionlens.training.utils import calculate_metrics
 
 conf = OmegaConf.load("params.yaml")
@@ -17,12 +16,10 @@ def main():
     else:
         model_id = conf.models.model_id
 
-    model = mlflow.pyfunc.load_model(f"models:/{model_id}")
+    model = mlflow.sklearn.load_model(f"models:/{model_id}")
 
     eval_data_path = "data/eval_data/"
     files = get_csv_files(eval_data_path)
-
-    vectorizer = get_saved_tfidf_vectorizer()
 
     with mlflow.start_run(run_name="evals"):
         mlflow.log_param("model_id", model_id)
@@ -31,10 +28,8 @@ def main():
             name = os.path.basename(file).split(".")[0]
             data = pd.read_csv(os.path.join(eval_data_path, f"{name}.csv"))
 
-            vectors = vectorizer.transform(data["text"])
-
             with mlflow.start_run(nested=True, run_name=name):
-                predictions = model.predict(vectors)
+                predictions = model.predict(data["text"])
 
                 metrics, con_matrix_fig, roc_fig = calculate_metrics(
                     data["score"], predictions, prefix="test_", figures=True

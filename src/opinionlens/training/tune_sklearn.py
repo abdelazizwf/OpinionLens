@@ -1,9 +1,11 @@
 import mlflow
 import optuna
 from omegaconf import OmegaConf
+from sklearn.pipeline import make_pipeline
 
-from opinionlens.common.utils import get_timestamp, hash_file
-from opinionlens.training.sklearn_subjects import BaggingLinearSVCSubject
+from opinionlens.common.utils import get_timestamp
+from opinionlens.preprocessing.vectorize import get_saved_tfidf_vectorizer
+from opinionlens.training.sklearn_subjects import LogisticRegressionSubject
 from opinionlens.training.utils import (
     calculate_metrics,
     concat_data,
@@ -16,7 +18,7 @@ conf = OmegaConf.load("params.yaml")
 def main():
     X_train, X_val, X_test, y_train, y_val, y_test = load_vectorized_data()
 
-    subject = BaggingLinearSVCSubject
+    subject = LogisticRegressionSubject
     run_name = subject.mlflow_run_name
     with mlflow.start_run(run_name=run_name) as run:
         study = optuna.create_study(
@@ -62,17 +64,17 @@ def main():
         mlflow.log_figure(con_matrix_fig, "figures/confusion_matrix.png")
         mlflow.log_figure(roc_fig, "figures/roc.png")
 
-        tags = {
-            "objects": f"vectorizer.pkl::{hash_file("objects/vectorizer.pkl")}"
-        }
-
         exp_name = mlflow.get_experiment(run.info.experiment_id).name
         model_name = exp_name + "-" + "-".join(run_name.split("-")[:2])
+
+        model = make_pipeline(
+            get_saved_tfidf_vectorizer(), model
+        )
+
         model_info = mlflow.sklearn.log_model(
             model,
             name=model_name,
-            input_example=X_test[0],
-            tags=tags,
+            # input_example=X_test[0],
         )
 
         conf.models.model_id = model_info.model_id

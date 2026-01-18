@@ -47,16 +47,12 @@ class APISettings(BaseModel):
         "./models",
         description="The path to the models fetched by the API from the model registry",
     )
-    saved_objects_path: DirectoryPath = Field(
-        "./objects",
-        description="The path to the model-related objects uploaded to the API",
-    )
     logging_level: str = Field(
         "DEBUG",
         description="The logging level for the API",
     )
     admin_key: SecretStr = Field(
-        "admin",
+        SecretStr("admin"),
         description="The authentication key for API admin operations",
     )
 

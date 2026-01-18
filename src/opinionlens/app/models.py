@@ -34,8 +34,8 @@ class SklearnModel(Model):
             model_path: The path of the model directory.
         """
         self.model_id = model_id
-        self.pyfunc_model = mlflow.pyfunc.load_model(model_path)
-        self._vectorizer = get_saved_tfidf_vectorizer()
+        self.pyfunc_model = mlflow.sklearn.load_model(model_path)
+        # self._vectorizer = get_saved_tfidf_vectorizer()
         self._logger = get_logger(self.__class__.__name__, level=settings.api.logging_level)
 
     def preprocess_text(self, batch: list[str]) -> spmatrix:
@@ -49,7 +49,8 @@ class SklearnModel(Model):
         """
         tokenized_batch = [" ".join(tokenizer(clean_text(text))) for text in batch]
 
-        vectors = self._vectorizer.transform(np.array(tokenized_batch))
+        # vectors = self._vectorizer.transform(np.array(tokenized_batch))
+        vectors = tokenized_batch
 
         self._logger.debug("Preprocessing done.")
         return vectors

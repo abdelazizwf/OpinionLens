@@ -9,11 +9,11 @@ import mlflow
 from opinionlens.app.exceptions import ModelNotAvailableError, OperationalError
 from opinionlens.app.models import Model, SklearnModel
 from opinionlens.common.settings import get_settings
-from opinionlens.common.utils import get_logger, hash_file
+from opinionlens.common.utils import get_logger
 
 settings = get_settings()
 
-__all__ = ["model_manager", "object_manager"]
+__all__ = ["model_manager"]
 
 
 class __ModelManager:
@@ -111,24 +111,6 @@ class __ModelManager:
 
         return result
 
-    def _check_model_objects(self, model_tags: dict[str, str]):
-        """Check if all model-related objects exist."""
-        objects_tag = model_tags.get("objects")
-
-        if objects_tag is None:
-            return
-
-        objects_list = objects_tag.split("&")
-        for obj in objects_list:
-            file_name, file_hash = obj.split("::")
-            file_path = os.path.join(settings.api.saved_objects_path, file_name)
-            if not os.path.exists(file_path) or hash_file(file_path) != file_hash:
-                raise OperationalError(
-                    f"Model-related object {file_name} with hash {file_hash} wasn't found. Model fetching aborted."
-                )
-
-            self._logger.info(f"Model-related object {file_name}::{file_hash} verified.")
-
     def get_default_model(self) -> Model:
         """Return the default model object to make predictions.
 
@@ -166,8 +148,6 @@ class __ModelManager:
         # Propagate Mlflow exception
         model_info = mlflow.models.get_model_info(model_uri)
         model_id = model_info.model_id
-
-        self._check_model_objects(model_info.tags)
 
         if self._model_exists(model_id):
             self._logger.info(f"Model {model_id!r}, requested as {model_uri!r}, is already loaded.")
@@ -249,70 +229,4 @@ class __ModelManager:
         self._logger.info(f"Model {model_id!r} set as default.")
 
 
-class __ObjectManager:
-
-    def __init__(self):
-        self._logger = get_logger(self.__class__.__name__, level=settings.api.logging_level)
-
-        self._objects = {}
-
-        self._read_objects_from_disk()
-
-    def _get_file_path(self, filename):
-        return os.path.join(settings.api.saved_objects_path, filename)
-
-    def _read_objects_from_disk(self):
-        _, _, files = next(os.walk(settings.api.saved_objects_path))
-        for file in files:
-            self._objects[file] = hash_file(self._get_file_path(file))
-        self._logger.debug(f"Read {len(files)} objects from disk.")
-
-    def _object_exists(self, filename):
-        return filename in self._objects.keys()
-
-    def _recieve_file(self, file):
-        try:
-            with open(self._get_file_path(file.filename), 'wb') as f:
-                shutil.copyfileobj(file.file, f, length=1024 * 1024 * 4)
-        except Exception as e:
-            raise e
-        finally:
-            file.file.close()
-
-    def get_objects(self):
-        results = []
-
-        for filename, hash in self._objects.items():
-            file_path = self._get_file_path(filename)
-            results.append({
-                "filename": filename,
-                "size": f"{round(os.path.getsize(file_path) / (1024 * 1024), 3)} MB",
-                "hash": hash,
-            })
-
-        return results
-
-    def delete_object(self, filename):
-        if not self._object_exists(filename):
-            raise OperationalError(message=f"Object {filename!r} doesn't exist.")
-
-        path = self._get_file_path(filename)
-        os.remove(path)
-
-        del self._objects[filename]
-
-    def add_object(self, file):
-        filename = file.filename
-
-        if self._object_exists(filename):
-            raise OperationalError(f"Object {filename!r} exists.")
-
-        self._recieve_file(file)
-
-        self._objects[filename] = hash_file(
-            self._get_file_path(filename)
-        )
-
-
 model_manager = __ModelManager()
-object_manager = __ObjectManager()

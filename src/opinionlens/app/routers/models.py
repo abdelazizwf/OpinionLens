@@ -1,10 +1,10 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Body, File, HTTPException, UploadFile
+from fastapi import APIRouter, Body, HTTPException
 from mlflow.exceptions import MlflowException
 
 from opinionlens.app.exceptions import ModelNotAvailableError, OperationalError
-from opinionlens.app.managers import model_manager, object_manager
+from opinionlens.app.managers import model_manager
 from opinionlens.common.settings import get_settings
 
 settings = get_settings()
@@ -75,36 +75,3 @@ async def delete_model(model_id: str):
         raise HTTPException(status_code=503, detail=f"{type(e).__name__}: {e.message}")
 
     return {"message": f"Model {model_id!r} was deleted successfully."}
-
-
-@router.post("/objects")
-def upload_model_related_object(file: UploadFile = File(...)):
-    try:
-        object_manager.add_object(file)
-
-    except OperationalError:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Object {file.filename} already exists. Consider deleting it first."
-            )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error during upload: {e}")
-    finally:
-        file.file.close()
-
-    return {"message": f"Successfully uploaded {file.filename!r}"}
-
-
-@router.delete("/objects")
-async def delete_model_related_object(filename: str):
-    try:
-        object_manager.delete_object(filename)
-    except OperationalError as e:
-        raise HTTPException(status_code=404, detail=e.message)
-
-    return {"message": f"Successfully deleted object {filename!r}"}
-
-
-@router.get("/objects")
-async def list_objects():
-    return object_manager.get_objects()
