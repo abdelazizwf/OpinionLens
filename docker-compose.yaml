@@ -19,6 +19,7 @@ services:
       - traefik.http.middlewares.opinionlens-ratelimit.ratelimit.period=1s
       - traefik.http.middlewares.opinionlens-ratelimit.ratelimit.burst=10
       - traefik.http.routers.opinionlens-http.middlewares=opinionlens-ratelimit@docker
+      - traefik.http.routers.opinionlens-http.middlewares=authelia@docker
 
 networks:
   docker-net:
