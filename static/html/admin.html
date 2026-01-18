@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
   <meta charset="UTF-8" />
-  <title>OpinionLens</title>
+  <title>OpinionLens - Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <link rel="icon" type="image/png" href="{{ url_for('static', path='/images/favicon.png') }}"/>
@@ -28,7 +28,7 @@
       <a href="/" class="nav-link">Home</a>
       <a href="/admin" class="nav-link active">Admin</a>
       <a
-        href="https://github.com/your-username/your-repo"
+        href="https://github.com/abdelazizwf/OpinionLens"
         class="nav-link"
         target="_blank"
         rel="noopener noreferrer"
@@ -128,6 +128,22 @@
 
 
     <script>
+        const themeToggle = document.getElementById("themeToggle");
+        const root = document.documentElement;
+
+        const savedTheme = localStorage.getItem("theme") || "dark";
+        root.setAttribute("data-theme", savedTheme);
+        themeToggle.textContent = savedTheme === "dark" ? "🌙" : "☀️";
+
+        themeToggle.addEventListener("click", () => {
+            const current = root.getAttribute("data-theme");
+            const next = current === "dark" ? "light" : "dark";
+
+            root.setAttribute("data-theme", next);
+            localStorage.setItem("theme", next);
+            themeToggle.textContent = next === "dark" ? "🌙" : "☀️";
+        });
+
         const modelsTableBody = document.querySelector("#modelsTable tbody");
 
         // This will be reused later when implementing model selection/download
@@ -441,8 +457,6 @@
 
 
     </script>
-
-  <script src="{{ url_for('static', path='/js/script.js') }}"></script>
 
 
 </body>
