@@ -1,0 +1,3 @@
+ENV="local" # Set to `local` when running the app locally, or to `stage` when running with docker.
+MLFLOW_ARTIFACT_UPLOAD_DOWNLOAD_TIMEOUT=3600
+MLFLOW_TRACKING_USERNAME="user"

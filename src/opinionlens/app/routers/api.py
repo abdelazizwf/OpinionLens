@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends # noqa
+from fastapi import APIRouter
 from fastapi.responses import Response
 from prometheus_client import (
     CONTENT_TYPE_LATEST,
@@ -6,7 +6,6 @@ from prometheus_client import (
 )
 
 from opinionlens.app import instruments
-from opinionlens.app.dependencies import authenticate_admin # noqa
 from opinionlens.app.info import app_info
 from opinionlens.app.routers import inference, models
 
@@ -22,7 +21,6 @@ router.include_router(
     models.router,
     prefix="/models",
     tags=["models"],
-    # dependencies=[Depends(authenticate_admin)],
 )
 
 

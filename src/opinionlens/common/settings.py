@@ -6,7 +6,6 @@ from pydantic import (
     DirectoryPath,
     Field,
     HttpUrl,
-    SecretStr,
     field_validator,
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -46,10 +45,6 @@ class APISettings(BaseModel):
     logging_level: str = Field(
         "DEBUG",
         description="The logging level for the API",
-    )
-    admin_key: SecretStr = Field(
-        SecretStr("admin"),
-        description="The authentication key for API admin operations",
     )
 
 
