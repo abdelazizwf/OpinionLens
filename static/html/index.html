@@ -5,7 +5,7 @@
 
   <meta charset="UTF-8" />
   <title>OpinionLens</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=1024" />
 
   <link rel="icon" type="image/png" href="{{ url_for('static', path='/images/favicon.png') }}"/>
 
@@ -60,6 +60,51 @@
     <div id="error" class="error"></div>
     <div id="result" class="result" style="display: none;"></div>
   </div>
+
+    <div class="container">
+      <h2>Availabe API Endpoints</h2>
+
+      <p class="description">
+        Try the following available API endpoints for programatic sentiment analysis.
+      </p>
+
+      <div class="table-wrapper">
+      <table id="loadedModelsTable">
+          <thead>
+          <tr>
+              <th>Method</th>
+              <th>URL</th>
+              <th>Parameters</th>
+              <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>GET</td>
+              <td class="api-link">/api/v1/inference/predict</td>
+              <td><i>text</i> <small>(<i>str</i>: query parameter)</small></td>
+              <td>Quick analysis of a single text</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td class="api-link">/api/v1/inference/predict</td>
+              <td><i>text</i> <small>(<i>str</i>: body parameter)</small></td>
+              <td>Secure analysis of a single text</td>
+            </tr>
+            <tr>
+              <td>POST</td>
+              <td class="api-link">/api/v1/inference/batch_predict</td>
+              <td><small>(<i>list[str]</i>: body parameter)</small</small></td>
+              <td>Quick and secure analysis of multiple texts</td>
+            </tr>
+          </tbody>
+      </table>
+      </div>
+    </div>
+
+  <footer class="footer">
+    <p>© 2026 Abdelaziz Farahat · OpinionLens</p>
+  </footer>
 
   <script src="{{ url_for('static', path='/js/script.js') }}"></script>
 </body>

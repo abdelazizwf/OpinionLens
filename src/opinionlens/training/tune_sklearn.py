@@ -5,7 +5,7 @@ from sklearn.pipeline import make_pipeline
 
 from opinionlens.common.utils import get_timestamp
 from opinionlens.preprocessing.vectorize import get_saved_tfidf_vectorizer
-from opinionlens.training.sklearn_subjects import LogisticRegressionSubject
+from opinionlens.training.sklearn_subjects import BaggingLinearSVCSubject
 from opinionlens.training.utils import (
     calculate_metrics,
     concat_data,
@@ -18,7 +18,7 @@ conf = OmegaConf.load("params.yaml")
 def main():
     X_train, X_val, X_test, y_train, y_val, y_test = load_vectorized_data()
 
-    subject = LogisticRegressionSubject
+    subject = BaggingLinearSVCSubject
     run_name = subject.mlflow_run_name
     with mlflow.start_run(run_name=run_name) as run:
         study = optuna.create_study(
