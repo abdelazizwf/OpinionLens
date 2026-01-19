@@ -28,6 +28,8 @@ class __ModelManager:
         self._default_model_id = None
         self._logger = get_logger(self.__class__.__name__, level=settings.api.logging_level)
 
+        os.makedirs(settings.api.saved_model_path, exist_ok=True)
+
         for model_id in set(self._list_model_path_dirs()):
             self.fetch_model("models:/" + model_id)
             self.set_default(model_id)

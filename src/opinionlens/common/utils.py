@@ -38,6 +38,7 @@ def get_logger(
     logger.addHandler(stream_handler)
 
     if filename is not None:
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
         file_handler = logging.FileHandler(filename, mode="a+")
         file_handler.setLevel(level)
         file_handler.setFormatter(formatter)

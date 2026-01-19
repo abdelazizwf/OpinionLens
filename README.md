@@ -163,7 +163,7 @@ This section is divided into four sub-sections, the first is for setting up the 
     opinionlens         | INFO:     Uvicorn running on http://0.0.0.0:80 (Press CTRL+C to quit)
     ```
 
-5. Open the `/.env` file and change the `ENV` value to `stage` (i.e. `ENV="stage"`).
+5. Open the `.env` file and change the `ENV` value to `stage` (i.e. `ENV="stage"`).
 6. From here, all interaction with the application are similar to the [Local Deployment](#local-deployment) section (starting from step 2). Make sure to replace <http://localhost:8000> with the current URL <http://opinionlens.localhost>.
 7. You can access other services as well to monitor the application or try any modifications:
    - The remote MLflow registry is located at <http://mlflow.localhost>
@@ -189,6 +189,24 @@ The following datasets were used to train models during development. While only 
 - [IMDB Review Dataset](https://www.kaggle.com/datasets/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews): Download and unpack at `data/raw/IMDB Dataset/`.
 - [Amazon Food Reviews Dataset](https://www.kaggle.com/datasets/snap/amazon-fine-food-reviews): Download and unpack at `data/raw/Amazon Food Reviews/`.
 - [Airline Tweets Sentiment](https://www.kaggle.com/datasets/crowdflower/twitter-airline-sentiment): Download and unpack at `data/raw/Airline Tweets/`.
+
+### Testing
+
+To load test the application and see it in action, a [Locust](https://docs.locust.io/en/stable/index.html) load test is configured at `tests/load_test.py`. Follow these steps to run the test:
+
+1. Download testing dependencies.
+
+    ```bash
+    uv sync --group test
+    ```
+
+2. Run the Locust server.
+
+    ```bash
+    uv run locust -f tests/load_test.py
+    ```
+
+3. Head to <http://localhost:8089>, and set the total number of users, new users per second, and the host URL (make sure the host URL matches the URL from your deployment method), and press start. The load test will start and the page will show multiple statistics. You can open Grafana to see the FastAPI and inference dashboards in action.
 
 ### Environment Variables
 
