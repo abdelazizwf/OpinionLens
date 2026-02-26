@@ -1686,7 +1686,7 @@ wheels = [
 
 [[package]]
 name = "opinionlens"
-version = "0.0.4"
+version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi", extra = ["standard"] },

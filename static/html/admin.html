@@ -1,466 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
 
-  <meta charset="UTF-8" />
-  <title>OpinionLens - Admin</title>
-  <meta name="viewport" content="width=1024"/>
+    <title>OpinionLens - Admin</title>
 
-  <link rel="icon" type="image/png" href="{{ url_for('static', path='/images/favicon.png') }}"/>
+    <link rel="icon" type="image/png" href="{{ url_for('static', path='/images/favicon.png') }}" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 
-  <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
-
+    <!-- Styles -->
+    <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet" />
 </head>
 <body>
-  <nav class="navbar">
-    <div class="nav-left">
-      <a href="/" class="logo-link">
-        <img src="{{ url_for('static', path='/images/favicon.png') }}" alt="Project logo" class="nav-logo" />
-      </a>
-    </div>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="/" class="logo-link">
+                <img src="{{ url_for('static', path='/images/favicon.png') }}" alt="OpinionLens Logo" class="nav-logo" />
+            </a>
+        </div>
 
-    <div class="nav-center">
-      <a href="/" class="nav-link">Home</a>
-      <a href="/admin" class="nav-link active">Admin</a>
-      <a
-        href="https://github.com/abdelazizwf/OpinionLens"
-        class="nav-link"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        GitHub
-      </a>
-    </div>
+        <div class="nav-center">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/admin" class="nav-link active">Admin</a>
+            <a href="https://github.com/abdelazizwf/OpinionLens" class="nav-link" target="_blank" rel="noopener noreferrer">
+                GitHub
+            </a>
+        </div>
 
-    <div class="nav-right">
-      <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
-        🌙
-      </button>
-    </div>
-  </nav>
+        <div class="nav-right">
+            <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+                🌙
+            </button>
+        </div>
+    </nav>
 
-  <div class="container">
-    <h2>Loaded Models</h2>
+    <main class="container">
+        <h2>Loaded Models</h2>
+        <p class="description">
+            These models are currently loaded in the backend memory.
+        </p>
 
-    <p class="description">
-    These models are currently loaded by the application.
-    </p>
+        <div class="table-wrapper">
+            <table id="loadedModelsTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Version</th>
+                        <th>Created</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </main>
 
-    <div class="table-wrapper">
-    <table id="loadedModelsTable">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Version</th>
-            <th>Created</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- Filled dynamically -->
-        </tbody>
-    </table>
-    </div>
-  </div>
+    <section class="container">
+        <h2>Available Models in Registry</h2>
+        <p class="description">
+            These models are available on the MLflow registry.
+        </p>
 
-  <div class="container" >
-    <h2>Available Models in the Registry</h2>
-    <p class="description">
-    The following models are available on the registry.
-    </p>
+        <div class="table-wrapper">
+            <table id="modelsTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Version</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </section>
 
-    <div class="table-wrapper">
-    <table id="modelsTable">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Version</th>
-            <th>Created</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- Filled dynamically -->
-        </tbody>
-    </table>
-    </div>
-    </div>
+    <section class="container">
+        <h3>Fetch Model From Registry</h3>
+        <p class="description">
+            Select a model from the registry to load it into the backend.
+        </p>
 
-    <div class="container">
+        <form id="downloadForm" class="model-form">
+            <label for="modelNameSelect">
+                Model Name
+                <select id="modelNameSelect" required>
+                    <option value="">Select a model</option>
+                </select>
+            </label>
 
-    <h3>Fetch Model From Registry</h3>
+            <label for="modelVersionSelect">
+                Model Version
+                <select id="modelVersionSelect" required disabled>
+                    <option value="">Select version</option>
+                </select>
+            </label>
 
-    <p class="description">
-    Select a model name and version to load into the application from the registry.
-    </p>
+            <label class="checkbox-label">
+                <input type="checkbox" id="setDefaultCheckbox" />
+                Set as active model
+            </label>
 
-    <form id="downloadForm" class="model-form">
-    <label>
-        Model name
-        <select id="modelNameSelect" required>
-        <option value="">Select a model</option>
-        </select>
-    </label>
-
-    <label>
-        Model version
-        <select id="modelVersionSelect" required disabled>
-        <option value="">Select version</option>
-        </select>
-    </label>
-
-    <label class="checkbox-label">
-    <input type="checkbox" id="setDefaultCheckbox" />
-    Set as the active model
-    </label>
-
-    <div id="downloadSpinner" class="spinner" style="display: none;"></div>
-
-
-    <button type="submit">Fetch model</button>
-    </form>
-    </div>
+            <div class="actions">
+                <button type="submit" id="downloadBtn" disabled>Fetch Model</button>
+                <div id="downloadSpinner" class="spinner" style="display: none;"></div>
+            </div>
+        </form>
+    </section>
 
     <footer class="footer">
-        <p>© 2026 Abdelaziz Farahat · OpinionLens</p>
+        <p>&copy; 2026 Abdelaziz Farahat &middot; OpinionLens</p>
     </footer>
 
-
-    <script>
-        const themeToggle = document.getElementById("themeToggle");
-        const root = document.documentElement;
-
-        const savedTheme = localStorage.getItem("theme") || "dark";
-        root.setAttribute("data-theme", savedTheme);
-        themeToggle.textContent = savedTheme === "dark" ? "🌙" : "☀️";
-
-        themeToggle.addEventListener("click", () => {
-            const current = root.getAttribute("data-theme");
-            const next = current === "dark" ? "light" : "dark";
-
-            root.setAttribute("data-theme", next);
-            localStorage.setItem("theme", next);
-            themeToggle.textContent = next === "dark" ? "🌙" : "☀️";
-        });
-
-        const modelsTableBody = document.querySelector("#modelsTable tbody");
-
-        // This will be reused later when implementing model selection/download
-        let availableModels = [];
-
-        async function loadAvailableModels() {
-        try {
-            const response = await fetch("/api/v1/models/registry");
-
-            if (!response.ok) {
-                throw new Error(`Failed to load models: ${response.status}`);
-            }
-
-            const data = await response.json();
-            availableModels = data;
-
-            // Persist for later use (e.g., model selection)
-            localStorage.setItem("availableModels", JSON.stringify(availableModels));
-
-            renderModelsTable(availableModels);
-        } catch (err) {
-            console.error(err);
-        }
-        }
-
-        function renderModelsTable(models) {
-        modelsTableBody.innerHTML = "";
-
-        for (const model of models) {
-            const row = document.createElement("tr");
-
-            row.innerHTML = `
-            <td>${model.name}</td>
-            <td>${model.latest_version}</td>
-            <td>${new Date(model.latest_version_creation).toLocaleString()}</td>
-            `;
-
-            modelsTableBody.appendChild(row);
-        }
-        }
-
-        // Load on page entry
-        loadAvailableModels();
-
-        const loadedModelsTableBody = document.querySelector(
-        "#loadedModelsTable tbody"
-        );
-
-        // Persisted for later actions (e.g., switching active model)
-        let loadedModels = [];
-
-        async function loadLoadedModels() {
-        try {
-            const response = await fetch("/api/v1/models/?brief=true");
-
-            if (!response.ok) {
-            throw new Error(`Failed to load loaded models: ${response.status}`);
-            }
-
-            const data = await response.json();
-            loadedModels = data;
-
-            localStorage.setItem("loadedModels", JSON.stringify(loadedModels));
-
-            renderLoadedModelsTable(loadedModels);
-        } catch (err) {
-            console.error(err);
-        }
-        }
-
-        function renderLoadedModelsTable(models) {
-        loadedModelsTableBody.innerHTML = "";
-
-        for (const model of models) {
-            const row = document.createElement("tr");
-
-            if (model.is_default) {
-            row.classList.add("active-model");
-            }
-
-            row.innerHTML = `
-            <td>${model.name}</td>
-            <td>${model.version}</td>
-            <td>${new Date(model.creation).toLocaleString()}</td>
-            <td>
-                <span class="status-badge ${
-                model.is_default ? "status-active" : "status-inactive"
-                }">
-                ${model.is_default ? "Active" : "Inactive"}
-                </span>
-            </td>
-            <td>
-            ${
-                model.is_default
-                ? ""
-                : `
-                    <button
-                    class="set-active-btn"
-                    data-name="${model.name}"
-                    data-version="${model.version}"
-                    title="Set active"
-                    >
-                    ⭐
-                    </button>
-                    <button
-                    class="delete-btn"
-                    data-id="${model.model_id}"
-                    title="Delete model"
-                    >
-                    🗑️
-                    </button>
-                `
-            }
-            </td>
-            `;
-
-            loadedModelsTableBody.appendChild(row);
-        }
-        }
-
-        // Load on page entry
-        loadLoadedModels();
-
-        loadedModelsTableBody.addEventListener("click", async (e) => {
-            const setActiveBtn = e.target.closest(".set-active-btn");
-            const deleteBtn = e.target.closest(".delete-btn");
-
-            // Set active action
-            if (setActiveBtn) {
-                const name = setActiveBtn.dataset.name;
-                const version = Number(setActiveBtn.dataset.version);
-
-                try {
-                const response = await fetch(
-                    "/api/v1/models/",
-                    {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        model_name: name,
-                        model_version: version,
-                        set_default: true
-                    })
-                    }
-                );
-
-                if (response.status === 201) {
-                    window.location.reload();
-                } else {
-                    console.error("Failed to set active model:", response.status);
-                }
-                } catch (err) {
-                console.error("Set active request failed:", err);
-                }
-
-                return;
-            }
-
-            // Delete action (existing logic)
-            if (deleteBtn) {
-                const modelId = deleteBtn.dataset.id;
-                if (!modelId) return;
-
-                try {
-                const response = await fetch(
-                    `/api/v1/models/?model_id=${modelId}`,
-                    { method: "DELETE" }
-                );
-
-                if (response.status === 200) {
-                    window.location.reload();
-                }
-                } catch (err) {
-                console.error("Delete request failed:", err);
-                }
-            }
-            });
-
-
-        const modelNameSelect = document.getElementById("modelNameSelect");
-        const modelVersionSelect = document.getElementById("modelVersionSelect");
-        const downloadForm = document.getElementById("downloadForm");
-        const submitBtn = downloadForm.querySelector("button[type='submit']");
-        submitBtn.disabled = true;
-
-
-        function updateSubmitState() {
-            const hasName = Boolean(modelNameSelect.value);
-            const hasVersion =
-                !modelVersionSelect.disabled && Boolean(modelVersionSelect.value);
-
-            submitBtn.disabled = !(hasName && hasVersion);
-        }
-
-        // Load from persisted available models
-        const avModelFromStorage = JSON.parse(localStorage.getItem("availableModels")) || [];
-
-        const loadedModels2 =
-            JSON.parse(localStorage.getItem("loadedModels")) || [];
-
-        // Map: model name -> set of loaded versions
-        const loadedByName = {};
-
-        for (const model of loadedModels2) {
-        if (!loadedByName[model.name]) {
-            loadedByName[model.name] = new Set();
-        }
-        loadedByName[model.name].add(model.version);
-        }
-
-
-        // Populate unique model names
-        modelNameSelect.innerHTML =
-        `<option value="">Select a model</option>`;
-
-        const modelNames = [...new Set(avModelFromStorage.map(m => m.name))];
-
-        for (const name of modelNames) {
-        const registryModel = avModelFromStorage.find(m => m.name === name);
-        const maxVersion = registryModel.latest_version;
-
-        const loadedVersions = loadedByName[name] || new Set();
-
-        // If only one version exists and it's already loaded → skip model entirely
-        if (maxVersion === 1 && loadedVersions.has(1)) {
-            continue;
-        }
-
-        const option = document.createElement("option");
-        option.value = name;
-        option.textContent = name;
-        modelNameSelect.appendChild(option);
-        }
-
-        modelNameSelect.addEventListener("change", () => {
-            const selectedName = modelNameSelect.value;
-
-            modelVersionSelect.innerHTML =
-                `<option value="">Select version</option>`;
-            modelVersionSelect.disabled = true;
-
-            if (!selectedName) return;
-
-            const registryModel = avModelFromStorage.find(
-                m => m.name === selectedName
-            );
-
-            if (!registryModel) return;
-
-            const maxVersion = registryModel.latest_version;
-            const loadedVersions = loadedByName[selectedName] || new Set();
-
-            for (let v = 1; v <= maxVersion; v++) {
-                if (loadedVersions.has(v)) continue;
-
-                const option = document.createElement("option");
-                option.value = v;
-                option.textContent = v;
-                modelVersionSelect.appendChild(option);
-            }
-
-            // Enable only if at least one version is available
-            if (modelVersionSelect.options.length > 1) {
-                modelVersionSelect.disabled = false;
-            }
-
-            updateSubmitState();
-        });
-
-        modelVersionSelect.addEventListener("change", updateSubmitState);
-
-
-        const spinner = document.getElementById("downloadSpinner");
-        const setDefaultCheckbox = document.getElementById("setDefaultCheckbox");
-
-        downloadForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const name = modelNameSelect.value;
-        const version = Number(modelVersionSelect.value);
-        const setDefault = setDefaultCheckbox.checked;
-
-
-        if (!name || !version) return;
-
-        submitBtn.disabled = true;
-        spinner.style.display = "block";
-
-        try {
-            const response = await fetch("/api/v1/models/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model_name: name,
-                model_version: version,
-                set_default: setDefault
-            })
-            });
-
-            if (response.status === 201) {
-            window.location.reload();
-            } else {
-            console.error("Unexpected response:", response.status);
-            }
-        } catch (err) {
-            console.error("Failed to download model:", err);
-        } finally {
-            spinner.style.display = "none";
-        }
-        });
-
-
-    </script>
-
-
+    <!-- Admin Logic -->
+    <script src="{{ url_for('static', path='/js/admin.js') }}"></script>
 </body>
+</html>

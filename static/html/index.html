@@ -1,111 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
 
-  <meta charset="UTF-8" />
-  <title>OpinionLens</title>
-  <meta name="viewport" content="width=1024" />
+    <title>OpinionLens - Sentiment Analysis</title>
 
-  <link rel="icon" type="image/png" href="{{ url_for('static', path='/images/favicon.png') }}"/>
+    <link rel="icon" type="image/png" href="{{ url_for('static', path='/images/favicon.png') }}" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 
-  <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
-
+    <!-- Styles -->
+    <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet" />
 </head>
 <body>
-  <nav class="navbar">
-    <div class="nav-left">
-      <a href="/" class="logo-link">
-        <img src="{{ url_for('static', path='/images/favicon.png') }}" alt="Project logo" class="nav-logo" />
-      </a>
-    </div>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="/" class="logo-link">
+                <img src="{{ url_for('static', path='/images/favicon.png') }}" alt="OpinionLens Logo" class="nav-logo" />
+            </a>
+        </div>
 
-    <div class="nav-center">
-      <a href="/" class="nav-link active">Home</a>
-      <a href="/admin" class="nav-link">Admin</a>
-      <a
-        href="https://github.com/abdelazizwf/OpinionLens"
-        class="nav-link"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        GitHub
-      </a>
-    </div>
+        <div class="nav-center">
+            <a href="/" class="nav-link active">Home</a>
+            <a href="/admin" class="nav-link">Admin</a>
+            <a href="https://github.com/abdelazizwf/OpinionLens" class="nav-link" target="_blank" rel="noopener noreferrer">
+                GitHub
+            </a>
+        </div>
 
-    <div class="nav-right">
-      <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
-        🌙
-      </button>
-    </div>
-  </nav>
+        <div class="nav-right">
+            <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+                🌙
+            </button>
+        </div>
+    </nav>
 
-  <div class="container">
-    <h1>OpinionLens</h1>
-    <p class="description">
-      A production-ready sentiment analysis project leveraging local ML training with tracked experiments, DVC data versioning and pipelines, remote MLflow model registry, Dockerized services, and Prometheus/Grafana monitoring with inference instrumentation.
-    </p>
+    <main class="container">
+        <h1>OpinionLens</h1>
+        <p class="description">
+            A production-ready sentiment analysis project leveraging local ML training with tracked experiments, DVC data versioning and pipelines, remote MLflow model registry, Dockerized services, and Prometheus/Grafana monitoring with inference instrumentation.
+        </p>
 
-    <textarea id="inputText" placeholder="Type or paste your text here..."></textarea>
+        <section class="input-section">
+            <textarea id="inputText" placeholder="Type or paste your text here..."></textarea>
+            <div class="actions">
+                <button id="submitBtn">Evaluate</button>
+                <span id="latency" class="latency" style="display: none;"></span>
+            </div>
+        </section>
 
-    <div>
-    <button id="submitBtn">Evaluate</button>
-    <span id="latency" class="latency" style="display: none;"></span>
-    </div>
+        <div id="error" class="error"></div>
+        <div id="result" class="result" style="display: none;"></div>
+    </main>
 
-    <div id="error" class="error"></div>
-    <div id="result" class="result" style="display: none;"></div>
-  </div>
+    <section class="container">
+        <h2>Available API Endpoints</h2>
+        <p class="description">
+            Try the following available API endpoints for programmatic sentiment analysis.
+        </p>
 
-    <div class="container">
-      <h2>Availabe API Endpoints</h2>
+        <div class="table-wrapper">
+            <table id="apiEndpointsTable">
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>URL</th>
+                        <th>Parameters</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="method-get">GET</span></td>
+                        <td class="api-link">/api/v1/inference/predict</td>
+                        <td><i>text</i> <small>(str: query parameter)</small></td>
+                        <td>Quick analysis of a single text</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-post">POST</span></td>
+                        <td class="api-link">/api/v1/inference/predict</td>
+                        <td><i>text</i> <small>(str: body parameter)</small></td>
+                        <td>Secure analysis of a single text</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-post">POST</span></td>
+                        <td class="api-link">/api/v1/inference/batch_predict</td>
+                        <td><small>(list[str]: body parameter)</small></td>
+                        <td>Quick and secure analysis of multiple texts</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
 
-      <p class="description">
-        Try the following available API endpoints for programatic sentiment analysis.
-      </p>
+    <footer class="footer">
+        <p>&copy; 2026 Abdelaziz Farahat &middot; OpinionLens</p>
+    </footer>
 
-      <div class="table-wrapper">
-      <table id="loadedModelsTable">
-          <thead>
-          <tr>
-              <th>Method</th>
-              <th>URL</th>
-              <th>Parameters</th>
-              <th>Description</th>
-          </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>GET</td>
-              <td class="api-link">/api/v1/inference/predict</td>
-              <td><i>text</i> <small>(<i>str</i>: query parameter)</small></td>
-              <td>Quick analysis of a single text</td>
-            </tr>
-            <tr>
-              <td>POST</td>
-              <td class="api-link">/api/v1/inference/predict</td>
-              <td><i>text</i> <small>(<i>str</i>: body parameter)</small></td>
-              <td>Secure analysis of a single text</td>
-            </tr>
-            <tr>
-              <td>POST</td>
-              <td class="api-link">/api/v1/inference/batch_predict</td>
-              <td><small>(<i>list[str]</i>: body parameter)</small</small></td>
-              <td>Quick and secure analysis of multiple texts</td>
-            </tr>
-          </tbody>
-      </table>
-      </div>
-    </div>
-
-  <footer class="footer">
-    <p>© 2026 Abdelaziz Farahat · OpinionLens</p>
-  </footer>
-
-  <script src="{{ url_for('static', path='/js/script.js') }}"></script>
+    <script src="{{ url_for('static', path='/js/script.js') }}"></script>
 </body>
 </html>
