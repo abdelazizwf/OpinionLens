@@ -57,6 +57,16 @@ body {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
+.nav-left,
+.nav-right {
+    flex: 1;
+    display: flex;
+}
+
+.nav-right {
+    justify-content: flex-end;
+}
+
 .nav-center {
     display: flex;
     gap: 32px;

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+
+    <title>{% block title %}OpinionLens{% endblock %}</title>
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', path='/images/favicon.png') }}" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+    <!-- Styles -->
+    <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet" />
+    {% block extra_head %}{% endblock %}
+
+    <script src="https://kit.fontawesome.com/52df55f3de.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="/" class="logo-link">
+                <img src="{{ url_for('static', path='/images/favicon.png') }}" alt="OpinionLens Logo" class="nav-logo" />
+            </a>
+        </div>
+
+        <div class="nav-center">
+            <a href="/" class="nav-link {% if request.url.path == '/' %}active{% endif %}">Home</a>
+            <a href="/admin" class="nav-link {% if request.url.path == '/admin' %}active{% endif %}">Admin</a>
+            <a href="https://grafana.abdelazizwf.dev/public-dashboards/363fe33ebd2c4965b671e7704fcbee2b" class="nav-link" target="_blank" rel="noopener noreferrer">
+                Dashboard <i class="fa-light fa-arrow-up-right-from-square"></i>
+            </a>
+            <a href="https://github.com/abdelazizwf/OpinionLens" class="nav-link" target="_blank" rel="noopener noreferrer">
+                GitHub
+            </a>
+        </div>
+
+        <div class="nav-right">
+            <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+                🌙
+            </button>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 Abdelaziz Farahat &middot; OpinionLens</p>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

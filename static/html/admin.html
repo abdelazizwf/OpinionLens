@@ -1,130 +1,88 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+{% extends "base.html" %}
 
-    <title>OpinionLens - Admin</title>
+{% block title %}OpinionLens - Admin{% endblock %}
 
-    <link rel="icon" type="image/png" href="{{ url_for('static', path='/images/favicon.png') }}" />
+{% block content %}
+<main class="container">
+    <h2>Loaded Models</h2>
+    <p class="description">
+        These models are currently loaded in the backend memory.
+    </p>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <div class="table-wrapper">
+        <table id="loadedModelsTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Version</th>
+                    <th>Created</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Populated dynamically -->
+            </tbody>
+        </table>
+    </div>
+</main>
 
-    <!-- Styles -->
-    <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet" />
-</head>
-<body>
-    <nav class="navbar">
-        <div class="nav-left">
-            <a href="/" class="logo-link">
-                <img src="{{ url_for('static', path='/images/favicon.png') }}" alt="OpinionLens Logo" class="nav-logo" />
-            </a>
+<section class="container">
+    <h2>Available Models in Registry</h2>
+    <p class="description">
+        These models are available on the MLflow registry.
+    </p>
+
+    <div class="table-wrapper">
+        <table id="modelsTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Version</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Populated dynamically -->
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="container">
+    <h3>Fetch Model From Registry</h3>
+    <p class="description">
+        Select a model from the registry to load it into the backend.
+    </p>
+
+    <form id="downloadForm" class="model-form">
+        <label for="modelNameSelect">
+            Model Name
+            <select id="modelNameSelect" required>
+                <option value="">Select a model</option>
+            </select>
+        </label>
+
+        <label for="modelVersionSelect">
+            Model Version
+            <select id="modelVersionSelect" required disabled>
+                <option value="">Select version</option>
+            </select>
+        </label>
+
+        <label class="checkbox-label">
+            <input type="checkbox" id="setDefaultCheckbox" />
+            Set as active model
+        </label>
+
+        <div class="actions">
+            <button type="submit" id="downloadBtn" disabled>Fetch Model</button>
+            <div id="downloadSpinner" class="spinner" style="display: none;"></div>
         </div>
+    </form>
+</section>
+{% endblock %}
 
-        <div class="nav-center">
-            <a href="/" class="nav-link">Home</a>
-            <a href="/admin" class="nav-link active">Admin</a>
-            <a href="https://github.com/abdelazizwf/OpinionLens" class="nav-link" target="_blank" rel="noopener noreferrer">
-                GitHub
-            </a>
-        </div>
-
-        <div class="nav-right">
-            <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
-                🌙
-            </button>
-        </div>
-    </nav>
-
-    <main class="container">
-        <h2>Loaded Models</h2>
-        <p class="description">
-            These models are currently loaded in the backend memory.
-        </p>
-
-        <div class="table-wrapper">
-            <table id="loadedModelsTable">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Version</th>
-                        <th>Created</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Populated dynamically -->
-                </tbody>
-            </table>
-        </div>
-    </main>
-
-    <section class="container">
-        <h2>Available Models in Registry</h2>
-        <p class="description">
-            These models are available on the MLflow registry.
-        </p>
-
-        <div class="table-wrapper">
-            <table id="modelsTable">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Version</th>
-                        <th>Created</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Populated dynamically -->
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <section class="container">
-        <h3>Fetch Model From Registry</h3>
-        <p class="description">
-            Select a model from the registry to load it into the backend.
-        </p>
-
-        <form id="downloadForm" class="model-form">
-            <label for="modelNameSelect">
-                Model Name
-                <select id="modelNameSelect" required>
-                    <option value="">Select a model</option>
-                </select>
-            </label>
-
-            <label for="modelVersionSelect">
-                Model Version
-                <select id="modelVersionSelect" required disabled>
-                    <option value="">Select version</option>
-                </select>
-            </label>
-
-            <label class="checkbox-label">
-                <input type="checkbox" id="setDefaultCheckbox" />
-                Set as active model
-            </label>
-
-            <div class="actions">
-                <button type="submit" id="downloadBtn" disabled>Fetch Model</button>
-                <div id="downloadSpinner" class="spinner" style="display: none;"></div>
-            </div>
-        </form>
-    </section>
-
-    <footer class="footer">
-        <p>&copy; 2026 Abdelaziz Farahat &middot; OpinionLens</p>
-    </footer>
-
-    <!-- Admin Logic -->
-    <script src="{{ url_for('static', path='/js/admin.js') }}"></script>
-</body>
-</html>
+{% block scripts %}
+<script src="{{ url_for('static', path='/js/admin.js') }}"></script>
+{% endblock %}
