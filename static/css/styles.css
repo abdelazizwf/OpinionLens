@@ -164,7 +164,7 @@ body {
     display: none;
 }
 
-.delimiter-selection {
+.delimiter-selection, .column-selection {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -172,13 +172,17 @@ body {
     color: var(--muted);
 }
 
-.delimiter-selection select {
+.delimiter-selection select, .column-selection input {
     background-color: var(--card);
     color: var(--text);
     border: 1px solid var(--border);
     border-radius: 6px;
     padding: 6px 12px;
     font-size: 0.9rem;
+}
+
+.column-selection input {
+    width: 200px;
 }
 
 /* Batch Results */

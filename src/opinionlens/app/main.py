@@ -1,5 +1,7 @@
 from contextlib import asynccontextmanager
+from io import BytesIO
 
+import pandas as pd
 from fastapi import (
     BackgroundTasks,
     FastAPI,
@@ -11,7 +13,7 @@ from fastapi import (
 )
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from prometheus_fastapi_instrumentator import Instrumentator
@@ -88,8 +90,8 @@ async def admin(request: Request):
     return templates.TemplateResponse("admin.html", {"request": request})
 
 
-@app.post("/upload_predict")
-async def upload_predict(
+@app.post("/upload_txt")
+async def upload_txt(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     delimiter: str = Form("\n"),
@@ -122,3 +124,53 @@ async def upload_predict(
         raise HTTPException(status_code=400, detail="Could not decode file. Please upload a valid UTF-8 text file.")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/upload_csv")
+async def upload_csv(
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
+    column_name: str = Form(...),
+):
+    """Predict sentiments of texts in a CSV file and append results."""
+    settings = get_settings()
+    if file.size is not None and file.size > settings.api.max_file_size_mb * 1024 * 1024:
+        raise HTTPException(
+            status_code=413,
+            detail=f"File too large. Maximum size is {settings.api.max_file_size_mb}MB."
+        )
+
+    try:
+        content = await file.read()
+        df = pd.read_csv(BytesIO(content))
+
+        if column_name not in df.columns:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Column '{column_name}' not found in the uploaded CSV."
+            )
+
+        # Remove empty rows in the specified column for prediction
+        batch = df[column_name].astype(str).tolist()
+
+        if not batch:
+             raise HTTPException(status_code=400, detail="The specified column is empty.")
+
+        predictions = await batch_predict(batch, background_tasks)
+        df["sentiment"] = predictions
+
+        # Save to buffer
+        stream = BytesIO()
+        df.to_csv(stream, index=False)
+        stream.seek(0)
+
+        return StreamingResponse(
+            stream,
+            media_type="text/csv",
+            headers={"Content-Disposition": f"attachment; filename=evaluated_{file.filename}"}
+        )
+
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=500, detail=f"Error processing CSV: {str(e)}")

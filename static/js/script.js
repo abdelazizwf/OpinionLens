@@ -19,6 +19,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const negativeCountSpan = document.getElementById("negativeCount");
     const batchLatencyDiv = document.getElementById("batchLatency");
 
+    // CSV Input Elements
+    const csvUploadBtn = document.getElementById("csvUploadBtn");
+    const csvDownloadBtn = document.getElementById("csvDownloadBtn");
+    const csvFileInput = document.getElementById("csvFileInput");
+    const columnNameInput = document.getElementById("columnName");
+    const csvLatencyDiv = document.getElementById("csvLatency");
+
     // Pagination Elements
     const prevPageBtn = document.getElementById("prevPage");
     const nextPageBtn = document.getElementById("nextPage");
@@ -40,6 +47,10 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     let currentPage = 1;
     const itemsPerPage = 5;
+
+    // CSV Cache
+    let cachedCsvBlob = null;
+    let cachedCsvFileName = "";
 
     /**
      * Theme Initialization and Handling
@@ -89,8 +100,17 @@ document.addEventListener("DOMContentLoaded", () => {
         latencyDiv.style.display = "none";
         batchResultDiv.style.display = "none";
         batchLatencyDiv.style.display = "none";
+        csvLatencyDiv.style.display = "none";
+        csvDownloadBtn.style.display = "none";
         currentBatchData = { predictions: [], segments: [] };
         currentPage = 1;
+
+        // Clear CSV cache
+        if (cachedCsvBlob) {
+            window.URL.revokeObjectURL(cachedCsvBlob);
+            cachedCsvBlob = null;
+            cachedCsvFileName = "";
+        }
     };
 
     /**
@@ -98,7 +118,14 @@ document.addEventListener("DOMContentLoaded", () => {
      */
     fileInput.addEventListener("change", (e) => {
         const fileName = e.target.files[0]?.name || "Choose a text file...";
-        document.querySelector(".file-label span").textContent = fileName;
+        document.querySelector("#batchInput .file-label span").textContent = fileName;
+    });
+
+    csvFileInput.addEventListener("change", (e) => {
+        const fileName = e.target.files[0]?.name || "Choose a CSV file...";
+        document.querySelector("#csvInput .file-label span").textContent = fileName;
+        // Hide download button when a new file is selected
+        csvDownloadBtn.style.display = "none";
     });
 
     /**
@@ -207,7 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const startTime = performance.now();
 
-            const response = await fetch("/upload_predict", {
+            const response = await fetch("/upload_txt", {
                 method: "POST",
                 body: formData
             });
@@ -257,11 +284,94 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     /**
+     * CSV Inference Logic
+     */
+    const uploadCsvAndEvaluate = async () => {
+        const file = csvFileInput.files[0];
+        const columnName = columnNameInput.value.trim();
+
+        // Clear only non-CSV results but reset CSV state for a new file
+        errorDiv.textContent = "";
+        resultDiv.style.display = "none";
+        batchResultDiv.style.display = "none";
+        csvDownloadBtn.style.display = "none";
+        csvLatencyDiv.style.display = "none";
+
+        if (!file) {
+            errorDiv.textContent = "Please select a CSV file before uploading.";
+            return;
+        }
+
+        if (!columnName) {
+            errorDiv.textContent = "Please enter the name of the text column.";
+            return;
+        }
+
+        csvUploadBtn.disabled = true;
+        csvUploadBtn.textContent = "Processing CSV...";
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("column_name", columnName);
+
+        try {
+            const startTime = performance.now();
+
+            const response = await fetch("/upload_csv", {
+                method: "POST",
+                body: formData
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.detail || `CSV processing failed with status: ${response.status}`);
+            }
+
+            const endTime = performance.now();
+            const latencyMs = Math.round(endTime - startTime);
+
+            const blob = await response.blob();
+
+            // Cache the result
+            if (cachedCsvBlob) {
+                window.URL.revokeObjectURL(cachedCsvBlob);
+            }
+            cachedCsvBlob = window.URL.createObjectURL(blob);
+            cachedCsvFileName = `evaluated_${file.name}`;
+
+            csvDownloadBtn.style.display = "inline-block";
+            csvLatencyDiv.textContent = `Processing Time: ${latencyMs} ms`;
+            csvLatencyDiv.style.display = "inline";
+
+        } catch (err) {
+            console.error("CSV inference error:", err);
+            errorDiv.textContent = err.message || "Failed to process CSV file.";
+        } finally {
+            csvUploadBtn.disabled = false;
+            csvUploadBtn.textContent = "Process CSV";
+        }
+    };
+
+    const downloadCachedCsv = () => {
+        if (!cachedCsvBlob) return;
+
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = cachedCsvBlob;
+        a.download = cachedCsvFileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+
+    /**
      * Event Listeners
      */
     themeToggle.addEventListener("click", toggleTheme);
     submitBtn.addEventListener("click", evaluateSentiment);
     uploadBtn.addEventListener("click", uploadAndEvaluate);
+    csvUploadBtn.addEventListener("click", uploadCsvAndEvaluate);
+    csvDownloadBtn.addEventListener("click", downloadCachedCsv);
 
     prevPageBtn.addEventListener("click", () => {
         if (currentPage > 1) {
