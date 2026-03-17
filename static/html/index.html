@@ -17,6 +17,9 @@
         </div>
 
         <div id="singleInput" class="tab-content active">
+            <p class="tab-explainer">
+                Analyze the sentiment of a single piece of text. The result is displayed immediately as <b>POSITIVE</b> or <b>NEGATIVE</b>.
+            </p>
             <textarea id="inputText" placeholder="Type or paste your text here..."></textarea>
             <div class="actions">
                 <button id="submitBtn">Evaluate</button>
@@ -25,6 +28,9 @@
         </div>
 
         <div id="batchInput" class="tab-content">
+            <p class="tab-explainer">
+                Upload a plain text file. The text will be split by your chosen delimiter (defaulting to a newline) and evaluated in bulk. The results are displayed in a paginated table.
+            </p>
             <div class="file-upload-wrapper">
                 <label for="fileInput" class="file-label">
                     <span>Choose a text file...</span>
@@ -41,12 +47,15 @@
                 </div>
             </div>
             <div class="actions">
-                <button id="uploadBtn">Upload & Evaluate</button>
+                <button id="uploadBtn">Evaluate</button>
                 <span id="batchLatency" class="latency" style="display: none;"></span>
             </div>
         </div>
 
         <div id="csvInput" class="tab-content">
+            <p class="tab-explainer">
+                Upload a CSV file and specify the text column. The system will process all rows and generate a new CSV file for download with an added <b>sentiment</b> column.
+            </p>
             <div class="file-upload-wrapper">
                 <label for="csvFileInput" class="file-label">
                     <span>Choose a CSV file...</span>
@@ -58,7 +67,7 @@
                 </div>
             </div>
             <div class="actions">
-                <button id="csvUploadBtn">Process CSV</button>
+                <button id="csvUploadBtn">Evaluate</button>
                 <button id="csvDownloadBtn" style="display: none;" class="set-active-btn">Download Results</button>
                 <span id="csvLatency" class="latency" style="display: none;"></span>
             </div>

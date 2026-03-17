@@ -150,15 +150,20 @@ async def upload_csv(
                 detail=f"Column '{column_name}' not found in the uploaded CSV."
             )
 
-        # Remove empty rows in the specified column for prediction
-        batch = df[column_name].astype(str).tolist()
+        # Identify non-null/non-empty indices
+        mask = df[column_name].notna() & (df[column_name].astype(str).str.strip() != "")
+        valid_indices = df[mask].index
+        batch = df.loc[valid_indices, column_name].astype(str).tolist()
 
         if not batch:
-             raise HTTPException(status_code=400, detail="The specified column is empty.")
-
-        predictions = await batch_predict(batch, background_tasks)
-        df["sentiment"] = predictions
-
+             # If there's data but nothing to predict, just add an empty column
+             df["sentiment"] = ""
+        else:
+            predictions = await batch_predict(batch, background_tasks)
+            # Initialize sentiment column with empty strings
+            df["sentiment"] = ""
+            # Map predictions back to their original rows
+            df.loc[valid_indices, "sentiment"] = predictions
         # Save to buffer
         stream = BytesIO()
         df.to_csv(stream, index=False)

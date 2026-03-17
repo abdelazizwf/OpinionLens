@@ -112,7 +112,7 @@ body {
     transition: all 0.2s;
 }
 
-.tab-btn:hover {
+.tab-btn:hover:not(.active) {
     background-color: var(--table-hover);
     color: var(--text);
 }
@@ -120,6 +120,7 @@ body {
 .tab-btn.active {
     background-color: var(--primary);
     color: white;
+    cursor: default;
 }
 
 .tab-content {
@@ -128,6 +129,14 @@ body {
 
 .tab-content.active {
     display: block;
+}
+
+.tab-explainer {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+    line-height: 1.5;
+    padding: 0 4px;
 }
 
 /* File Upload */
