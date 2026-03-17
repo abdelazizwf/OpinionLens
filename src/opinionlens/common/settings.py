@@ -46,6 +46,10 @@ class APISettings(BaseModel):
         "DEBUG",
         description="The logging level for the API",
     )
+    max_file_size_mb: int = Field(
+        5,
+        description="The maximum file size for batch upload in megabytes",
+    )
 
 
 class Settings(BaseSettings):

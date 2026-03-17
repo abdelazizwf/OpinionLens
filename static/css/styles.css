@@ -91,6 +91,175 @@ body {
     display: block;
 }
 
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    background-color: var(--table-hover);
+    color: var(--text);
+}
+
+.tab-btn.active {
+    background-color: var(--primary);
+    color: white;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* File Upload */
+.file-upload-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    background-color: var(--bg);
+    transition: border-color 0.2s;
+}
+
+.file-upload-wrapper:hover {
+    border-color: var(--primary);
+}
+
+.file-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+.file-label span {
+    font-weight: 500;
+}
+
+.file-label input[type="file"] {
+    display: none;
+}
+
+.delimiter-selection {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.delimiter-selection select {
+    background-color: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+}
+
+/* Batch Results */
+.batch-result {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+}
+
+.batch-result h3 {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+}
+
+.stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stats .status-badge {
+    font-size: 0.85rem;
+    padding: 6px 16px;
+}
+
+#resultsTable {
+    table-layout: fixed;
+}
+
+#resultsTable th:first-child,
+#resultsTable td:first-child {
+    width: 75%;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+#resultsTable th:last-child,
+#resultsTable td:last-child {
+    width: 25%;
+    text-align: center;
+}
+
+#resultsTable td:last-child {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.pagination button {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: var(--table-hover);
+}
+
+.pagination button:disabled {
+    opacity: 0.3;
+}
+
+#resultsTable tr td.positive {
+    color: var(--success);
+}
+
+#resultsTable tr td.negative {
+    color: var(--error);
+}
+
 /* Layout */
 .container {
     max-width: 800px;

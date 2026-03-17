@@ -3,13 +3,43 @@
  */
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Single Input Elements
     const submitBtn = document.getElementById("submitBtn");
     const inputText = document.getElementById("inputText");
     const resultDiv = document.getElementById("result");
-    const errorDiv = document.getElementById("error");
     const latencyDiv = document.getElementById("latency");
+
+    // Batch Input Elements
+    const uploadBtn = document.getElementById("uploadBtn");
+    const fileInput = document.getElementById("fileInput");
+    const delimiterSelect = document.getElementById("delimiter");
+    const batchResultDiv = document.getElementById("batchResult");
+    const resultsTableBody = document.querySelector("#resultsTable tbody");
+    const positiveCountSpan = document.getElementById("positiveCount");
+    const negativeCountSpan = document.getElementById("negativeCount");
+    const batchLatencyDiv = document.getElementById("batchLatency");
+
+    // Pagination Elements
+    const prevPageBtn = document.getElementById("prevPage");
+    const nextPageBtn = document.getElementById("nextPage");
+    const pageInfoSpan = document.getElementById("pageInfo");
+
+    // Shared Elements
+    const errorDiv = document.getElementById("error");
     const themeToggle = document.getElementById("themeToggle");
     const root = document.documentElement;
+
+    // Tab Elements
+    const tabBtns = document.querySelectorAll(".tab-btn");
+    const tabContents = document.querySelectorAll(".tab-content");
+
+    // Pagination State
+    let currentBatchData = {
+        predictions: [],
+        segments: []
+    };
+    let currentPage = 1;
+    const itemsPerPage = 5;
 
     /**
      * Theme Initialization and Handling
@@ -30,22 +60,60 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     /**
-     * Inference Logic
+     * Tab Switching
+     */
+    tabBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const tabId = btn.getAttribute("data-tab");
+
+            // Update buttons
+            tabBtns.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            // Update content
+            tabContents.forEach(content => {
+                content.classList.remove("active");
+                if (content.id === `${tabId}Input`) {
+                    content.classList.add("active");
+                }
+            });
+
+            // Clear results when switching
+            clearStates();
+        });
+    });
+
+    const clearStates = () => {
+        errorDiv.textContent = "";
+        resultDiv.style.display = "none";
+        latencyDiv.style.display = "none";
+        batchResultDiv.style.display = "none";
+        batchLatencyDiv.style.display = "none";
+        currentBatchData = { predictions: [], segments: [] };
+        currentPage = 1;
+    };
+
+    /**
+     * File Selection Feedback
+     */
+    fileInput.addEventListener("change", (e) => {
+        const fileName = e.target.files[0]?.name || "Choose a text file...";
+        document.querySelector(".file-label span").textContent = fileName;
+    });
+
+    /**
+     * Single Inference Logic
      */
     const evaluateSentiment = async () => {
         const text = inputText.value.trim();
 
-        // Clear previous state
-        errorDiv.textContent = "";
-        resultDiv.style.display = "none";
-        latencyDiv.style.display = "none";
+        clearStates();
 
         if (!text) {
             errorDiv.textContent = "Please enter some text before submitting.";
             return;
         }
 
-        // UI Feedback - Start
         submitBtn.disabled = true;
         submitBtn.textContent = "Evaluating...";
 
@@ -59,7 +127,8 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if (!response.ok) {
-                throw new Error(`Inference request failed with status: ${response.status}`);
+                const data = await response.json();
+                throw new Error(data.detail || `Inference request failed with status: ${response.status}`);
             }
 
             const endTime = performance.now();
@@ -67,23 +136,123 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
             const prediction = data.prediction;
 
-            // Render Result
             resultDiv.textContent = prediction;
-            resultDiv.className = "result"; // Reset classes
+            resultDiv.className = "result";
             resultDiv.classList.add(prediction === "POSITIVE" ? "positive" : "negative");
             resultDiv.style.display = "block";
 
-            // Render Latency
             latencyDiv.textContent = `Latency: ${latencyMs} ms`;
             latencyDiv.style.display = "inline";
 
         } catch (err) {
             console.error("Inference error:", err);
-            errorDiv.textContent = "Failed to evaluate text. Check the API or network.";
+            errorDiv.textContent = err.message || "Failed to evaluate text. Check the API or network.";
         } finally {
-            // UI Feedback - End
             submitBtn.disabled = false;
             submitBtn.textContent = "Evaluate";
+        }
+    };
+
+    /**
+     * Batch Rendering with Pagination
+     */
+    const renderBatchPage = (page) => {
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const pagePredictions = currentBatchData.predictions.slice(startIndex, endIndex);
+        const pageSegments = currentBatchData.segments.slice(startIndex, endIndex);
+
+        resultsTableBody.innerHTML = "";
+        pagePredictions.forEach((prediction, index) => {
+            const row = document.createElement("tr");
+            const textCell = document.createElement("td");
+            const sentimentCell = document.createElement("td");
+
+            textCell.textContent = pageSegments[index] || "(empty segment)";
+            sentimentCell.textContent = prediction;
+            sentimentCell.className = prediction === "POSITIVE" ? "positive" : "negative";
+
+            row.appendChild(textCell);
+            row.appendChild(sentimentCell);
+            resultsTableBody.appendChild(row);
+        });
+
+        const totalPages = Math.ceil(currentBatchData.predictions.length / itemsPerPage);
+        pageInfoSpan.textContent = `Page ${page} of ${totalPages}`;
+        prevPageBtn.disabled = page === 1;
+        nextPageBtn.disabled = page === totalPages || totalPages === 0;
+    };
+
+    /**
+     * Batch Inference Logic
+     */
+    const uploadAndEvaluate = async () => {
+        const file = fileInput.files[0];
+        const delimiter = delimiterSelect.value;
+
+        clearStates();
+
+        if (!file) {
+            errorDiv.textContent = "Please select a file before uploading.";
+            return;
+        }
+
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = "Uploading & Evaluating...";
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("delimiter", delimiter);
+
+        try {
+            const startTime = performance.now();
+
+            const response = await fetch("/upload_predict", {
+                method: "POST",
+                body: formData
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.detail || `Upload failed with status: ${response.status}`);
+            }
+
+            const endTime = performance.now();
+            const latencyMs = Math.round(endTime - startTime);
+            const predictions = await response.json();
+
+            // Process results
+            const fileContent = await file.text();
+            let escapedDelimiter = delimiter;
+            if (delimiter === "\\n") escapedDelimiter = "\n";
+            else if (delimiter === "\\t") escapedDelimiter = "\t";
+
+            const segments = fileContent.split(escapedDelimiter).map(s => s.trim()).filter(s => s);
+
+            currentBatchData = {
+                predictions: predictions,
+                segments: segments
+            };
+
+            let positiveCount = predictions.filter(p => p === "POSITIVE").length;
+            let negativeCount = predictions.length - positiveCount;
+
+            positiveCountSpan.textContent = `Positive: ${positiveCount}`;
+            negativeCountSpan.textContent = `Negative: ${negativeCount}`;
+
+            batchResultDiv.style.display = "block";
+            batchLatencyDiv.textContent = `Batch Latency: ${latencyMs} ms`;
+            batchLatencyDiv.style.display = "inline";
+
+            currentPage = 1;
+            renderBatchPage(currentPage);
+
+        } catch (err) {
+            console.error("Batch inference error:", err);
+            errorDiv.textContent = err.message || "Failed to process batch upload.";
+        } finally {
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = "Upload & Evaluate";
         }
     };
 
@@ -91,8 +260,23 @@ document.addEventListener("DOMContentLoaded", () => {
      * Event Listeners
      */
     themeToggle.addEventListener("click", toggleTheme);
-
     submitBtn.addEventListener("click", evaluateSentiment);
+    uploadBtn.addEventListener("click", uploadAndEvaluate);
+
+    prevPageBtn.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderBatchPage(currentPage);
+        }
+    });
+
+    nextPageBtn.addEventListener("click", () => {
+        const totalPages = Math.ceil(currentBatchData.predictions.length / itemsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderBatchPage(currentPage);
+        }
+    });
 
     inputText.addEventListener("keydown", (e) => {
         if (e.ctrlKey && e.key === "Enter") {

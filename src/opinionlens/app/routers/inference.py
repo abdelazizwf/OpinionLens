@@ -1,7 +1,12 @@
 import time
 from typing import Annotated
 
-from fastapi import APIRouter, BackgroundTasks, Body, HTTPException
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Body,
+    HTTPException,
+)
 
 from opinionlens.app import instruments
 from opinionlens.app.exceptions import ModelNotAvailableError, OperationalError
